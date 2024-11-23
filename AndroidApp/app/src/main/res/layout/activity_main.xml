@@ -73,4 +73,26 @@
         <!-- Repetă pentru celelalte zile -->
     </LinearLayout>
 
+    <!-- Container pentru ore -->
+    <LinearLayout
+        android:id="@+id/hourListContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintTop_toBottomOf="@id/weekCalendar"
+        android:layout_marginTop="16dp">
+
+        <!-- Exemplu de oră -->
+        <TextView
+            android:id="@+id/tvHour1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:text="08:00"
+            android:gravity="start"
+            android:textSize="14sp"/>
+
+        <!-- Repetă pentru fiecare oră -->
+    </LinearLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>
