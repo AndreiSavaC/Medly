@@ -48,8 +48,8 @@ fun Routing.appointmentRoute(appointmentService: AppointmentService,pacientServi
             } else if (!validDoctor) {
                 call.respond(HttpStatusCode.BadRequest, "Could not find doctor")
             }
-            else if(isAppointmentDateValid){
-                call.respond(HttpStatusCode.BadRequest, "Cannot create appointment in the past")
+            else if(!isAppointmentDateValid){
+                call.respond(HttpStatusCode.BadRequest, "Cannot create appointment in the past or incorect time\nEach slot should begin either from :00 or :30 for ${appointment.date} and ${appointment.time}")
             }
             else {
                 val updatedAppointment = appointment.copy(date = adjustedDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy")))
@@ -83,7 +83,6 @@ fun Routing.appointmentRoute(appointmentService: AppointmentService,pacientServi
                 return@get
             }
 
-            // Parse the date from the URL parameter
             val date = try {
                 LocalDate.parse(dateParam, DateTimeFormatter.ofPattern("dd-MM-yyyy"))
             } catch (e: DateTimeParseException) {
@@ -91,16 +90,13 @@ fun Routing.appointmentRoute(appointmentService: AppointmentService,pacientServi
                 return@get
             }
 
-            // Define the doctor's working hours
             val startTime = LocalTime.of(9, 0)
             val endTime = LocalTime.of(22, 0)
 
-            // Get existing appointments for the doctor on the specified date
             val existingAppointments = appointmentService.getAppointmentByDate(dateParam).map {
                     LocalTime.parse(it.time, DateTimeFormatter.ofPattern("HH:mm"))
                 }
 
-            // Generate all 30-minute slots within the working hours
             val allSlots = mutableListOf<LocalTime>()
             var currentTime = startTime
             while (currentTime.isBefore(endTime)) {
@@ -108,12 +104,10 @@ fun Routing.appointmentRoute(appointmentService: AppointmentService,pacientServi
                 currentTime = currentTime.plusMinutes(30)
             }
 
-            // Filter out slots that overlap with existing appointments
             val availableSlots = allSlots.filter { slot ->
                 existingAppointments.none { it == slot }
             }
 
-            // Respond with the available slots
             call.respond(HttpStatusCode.OK, availableSlots.map { it.format(DateTimeFormatter.ofPattern("HH:mm")) })
         }
 
@@ -159,19 +153,23 @@ fun Routing.appointmentRoute(appointmentService: AppointmentService,pacientServi
 fun isDateTimeValid(date:String,time:String): Boolean {
     val currentDate = LocalDateTime.now()
 
-    // Parse the date and time fields into a LocalDateTime object
+    if(time.endsWith(":00") || time.endsWith(":30")) {
+
+    }else{
+        return false
+    }
+
     try {
-        val dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yy")
-        val timeFormatter = DateTimeFormatter.ofPattern("HH:mm")
 
         val parsedDate = LocalDateTime.parse("$date $time",
-            DateTimeFormatter.ofPattern("dd-MM-yy HH:mm"))
+            DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm"))
 
-        // Validate that the appointment date is not in the past
         if (parsedDate.isBefore(currentDate)) {
             return false
         }
+
     }catch (e:Exception){
+        println(e)
         return false
     }
     return true
