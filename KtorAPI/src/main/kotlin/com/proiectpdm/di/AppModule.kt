@@ -1,9 +1,6 @@
 package com.proiectpdm.di
 
-import com.proiectpdm.db.DoctorService
-import com.proiectpdm.db.DoctorServiceImpl
-import com.proiectpdm.db.PacientService
-import com.proiectpdm.db.PacientServiceImpl
+import com.proiectpdm.db.*
 import org.koin.dsl.module
 
 val appModule= module {
@@ -12,5 +9,8 @@ val appModule= module {
     }
     single<PacientService> {
         PacientServiceImpl()
+    }
+    single <AppointmentService> {
+        AppointmentServiceImpl()
     }
 }
