@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">AndroidApp</string>
+    <string name="prev_week">&lt; Anterior</string>
+    <string name="next_week">Următor ></string>
+
+
 </resources>
