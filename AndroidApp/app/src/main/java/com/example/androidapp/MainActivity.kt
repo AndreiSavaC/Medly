@@ -8,12 +8,10 @@ import android.view.Gravity
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.example.androidapp.api.RetrofitClient
-import com.example.androidapp.models.Appointment
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.util.*
-
 
 class MainActivity : AppCompatActivity() {
 
@@ -21,7 +19,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var weekRangeTextView: TextView
     private lateinit var weekCalendar: LinearLayout
     private lateinit var hourListContainer: LinearLayout
-    private lateinit var appointments: List<Appointment>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,9 +28,6 @@ class MainActivity : AppCompatActivity() {
         weekRangeTextView = findViewById(R.id.txtWeekRange)
         weekCalendar = findViewById(R.id.weekCalendar)
         hourListContainer = findViewById(R.id.hourListContainer)
-
-
-
 
         val btnPrevWeek = findViewById<TextView>(R.id.btnPrevWeek)
         val btnNextWeek = findViewById<TextView>(R.id.btnNextWeek)
@@ -57,80 +51,56 @@ class MainActivity : AppCompatActivity() {
             updateWeekDisplay()
         }
 
-        // Fetch appointments
-        fetchAppointments()
+        // Fetch appointments pentru ziua selectată (Inițial pentru prima zi din săptămână)
+        fetchAppointmentsForSelectedDate(getFormattedDate(weekStart))
+
+        // Selectarea unei zile și fetch la orele disponibile
+        weekCalendar.setOnClickListener {
+            val selectedDay = getFormattedDate(weekStart)  // Obținem data selectată
+            fetchAppointmentsForSelectedDate(selectedDay)  // Apelăm API-ul pentru ziua respectivă
+        }
     }
 
-    // Fetch appointments din API
+    // Funcție pentru a face fetch la API pentru ziua selectată
+    private fun fetchAppointmentsForSelectedDate(selectedDate: String) {
+        val doctorId = 1  // ID-ul doctorului hardcodat
 
-
-    private fun fetchAppointments() {
-        // Fă cererea HTTP pentru a obține programările
-        RetrofitClient.appointmentService.getAppointments().enqueue(object : Callback<List<Appointment>> {
-            override fun onResponse(call: Call<List<Appointment>>, response: Response<List<Appointment>>) {
+        RetrofitClient.appointmentService.getAvailableHours(doctorId, selectedDate).enqueue(object : Callback<List<String>> {
+            override fun onResponse(call: Call<List<String>>, response: Response<List<String>>) {
                 if (response.isSuccessful) {
-                    appointments = response.body() ?: emptyList()
-                    Log.d("FetchAppointments", "Appointments fetched successfully: $appointments")
-                    updateHourList()  // Actualizăm lista cu ore
+                    val availableHours = response.body() ?: emptyList()
+                    Log.d("AvailableHours", "Available hours for $selectedDate: $availableHours")
+                    updateHourList(availableHours)  // Actualizăm lista cu orele disponibile
                 } else {
-                    Toast.makeText(this@MainActivity, "Failed to fetch appointments", Toast.LENGTH_SHORT).show()
-                    Log.e("FetchAppointments", "Error fetching appointments: ${response.message()}")
+                    Toast.makeText(this@MainActivity, "Failed to fetch available hours", Toast.LENGTH_SHORT).show()
+                    Log.e("AvailableHours", "Error fetching available hours: ${response.message()}")
                 }
             }
 
-            override fun onFailure(call: Call<List<Appointment>>, t: Throwable) {
+            override fun onFailure(call: Call<List<String>>, t: Throwable) {
                 Toast.makeText(this@MainActivity, "Error: ${t.message}", Toast.LENGTH_SHORT).show()
-                Log.e("FetchAppointments", "Error: ${t.message}", t)
+                Log.e("AvailableHours", "Error: ${t.message}", t)
             }
         })
     }
 
-
     // Actualizează lista cu orele disponibile
-    private fun updateHourList() {
+    private fun updateHourList(availableHours: List<String>) {
         hourListContainer.removeAllViews() // Ștergem orele existente
 
-        val startHour = 8
-        val endHour = 18
-
-        // Obținem ziua selectată
-        val selectedDate = getFormattedDate(weekStart)
-        Log.d("SelectedDate", "Selected date: $selectedDate")  // Log pentru data selectată
-
-        // Parcurgem fiecare oră din intervalul 8:00 - 18:00
-        for (hour in startHour..endHour) {
-            // Verificăm fiecare minut 0 și 30 pentru a adăuga sau ascunde ora
-            for (minute in arrayOf(0, 30)) {
-                val hourText = String.format("%02d:%02d", hour, minute)
-
-                // Log pentru fiecare ora verificată
-                Log.d("HourCheck", "Checking hour: $hourText")
-
-                // Verificăm dacă există o programare pentru această oră în ziua respectivă
-                val appointmentExists = appointments.any {
-                    Log.d("AppointmentCheck", "Comparing appointment: ${it.date} with selected date: $selectedDate and time: ${it.time} with hour: $hourText")
-                    it.date == selectedDate && it.time == hourText
-                }
-
-                if (appointmentExists) {
-                    Log.d("AppointmentExists", "Appointment exists for $hourText on $selectedDate. Skipping.")
-                    // Dacă există o programare la acea oră, o ignorăm (nu o adăugăm la UI)
-                    continue
-                }
-
-                // Creăm un TextView pentru fiecare oră disponibilă
-                val hourView = TextView(this).apply {
-                    text = hourText
-                    gravity = Gravity.START
-                    setPadding(16, 8, 16, 8)
-                    layoutParams = LinearLayout.LayoutParams(
-                        LinearLayout.LayoutParams.MATCH_PARENT,
-                        LinearLayout.LayoutParams.WRAP_CONTENT
-                    )
-                }
-
-                hourListContainer.addView(hourView)
+        // Parcurgem fiecare oră disponibilă și o adăugăm la UI
+        for (hour in availableHours) {
+            val hourView = TextView(this).apply {
+                text = hour
+                gravity = Gravity.START
+                setPadding(16, 8, 16, 8)
+                layoutParams = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                )
             }
+
+            hourListContainer.addView(hourView)
         }
     }
 
@@ -140,12 +110,10 @@ class MainActivity : AppCompatActivity() {
         val month = (calendar.get(Calendar.MONTH) + 1).toString().padStart(2, '0') // Adăugăm 0 în față la lunile 1-9
         val year = calendar.get(Calendar.YEAR)
 
-        val formattedDate = "$day-$month-$year" // Formatul DD-MM-YYYY
-        Log.d("FormattedDate", "Formatted date: $formattedDate")  // Log pentru data formatată
-        return formattedDate
+        return "$day-$month-$year" // Formatul DD-MM-YYYY
     }
 
-    // Actualizează afișarea săptămânii în funcție de interval
+    // Funcție pentru a actualiza afișarea săptămânii
     private fun updateWeekDisplay() {
         // Calculăm sfârșitul săptămânii
         val weekEnd = weekStart.clone() as Calendar
@@ -192,6 +160,9 @@ class MainActivity : AppCompatActivity() {
                 setOnClickListener {
                     clearSelection()
                     setBackgroundResource(R.drawable.day_selector)
+
+                    // După ce selectezi o zi, facem fetch la orele disponibile pentru acea zi
+                    fetchAppointmentsForSelectedDate(getFormattedDate(day))
                 }
             }
             weekCalendar.addView(dayView)
