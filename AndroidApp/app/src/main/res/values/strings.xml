@@ -1,7 +1,8 @@
 <resources>
     <string name="app_name">AndroidApp</string>
-    <string name="prev_week">&lt; Anterior</string>
-    <string name="next_week">Următor ></string>
+    <string name="prev_week_btn">&lt;Anterior</string>
+    <string name="next_week_btn">Următor></string>
+    <string name="schedule_text">Ore disponibile pe </string>
 
 
 </resources>
