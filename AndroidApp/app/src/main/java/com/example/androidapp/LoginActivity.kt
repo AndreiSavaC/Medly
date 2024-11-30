@@ -42,8 +42,12 @@ class LoginActivity : AppCompatActivity() {
             val password = loginPasswordEntry.text.toString()
 
             if (email.isNotEmpty() && password.isNotEmpty()) {
-                if (validateCredentials(email, password)) {
-                    val intent = Intent(this, UserInfoActivity::class.java)
+                if (validateCredentials(
+                        email,
+                        password
+                    ) && email.contains("@") && password.length > 7
+                ) {
+                    val intent = Intent(this, MainMenuActivity::class.java)
                     startActivity(intent)
                     finish()
                 } else Toast.makeText(

@@ -19,8 +19,7 @@ class VerifyInfoFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            @Suppress("DEPRECATION")
-            partialUserInfo = it.getParcelable("partialUserInfo")
+            @Suppress("DEPRECATION") partialUserInfo = it.getParcelable("partialUserInfo")
         }
     }
 
@@ -43,20 +42,25 @@ class VerifyInfoFragment : Fragment() {
         }
 
         confirmButton.isEnabled = false
-        confirmButton.setBackgroundColor(ContextCompat.getColor(requireContext(), android.R.color.darker_gray))
+        confirmButton.setBackgroundColor(
+            ContextCompat.getColor(
+                requireContext(), android.R.color.darker_gray
+            )
+        )
 
         Handler(Looper.getMainLooper()).postDelayed({
             confirmButton.isEnabled = true
-            confirmButton.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.mainRed))
+            confirmButton.setBackgroundColor(
+                ContextCompat.getColor(
+                    requireContext(), R.color.mainRed
+                )
+            )
         }, 1500)
 
         confirmButton.setOnClickListener {
-
-
-            parentFragmentManager.beginTransaction()
-                .replace(R.id.framgment_container, ExtraInfoFragment())
-                .addToBackStack(null)
-                .commit()
+            val fragment = ExtraInfoFragment.newInstance(partialUserInfo!!)
+            parentFragmentManager.beginTransaction().replace(R.id.framgment_container, fragment)
+                .addToBackStack(null).commit()
         }
 
         return view
@@ -70,5 +74,4 @@ class VerifyInfoFragment : Fragment() {
             }
         }
     }
-
 }

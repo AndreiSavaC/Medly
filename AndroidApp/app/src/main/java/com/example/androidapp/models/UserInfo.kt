@@ -11,7 +11,7 @@ class UserInfo(
     var lastName: String? = null,
     var email: String? = null,
     var gender: String? = null,
-    var height: Float? = null,
+    var height: Int? = null,
     var weight: Float? = null,
     var birthDate: LocalDate? = null
 ) : Parcelable {
@@ -20,7 +20,7 @@ class UserInfo(
         parcel.readString(),
         parcel.readString(),
         parcel.readString(),
-        parcel.readValue(Float::class.java.classLoader) as? Float,
+        parcel.readValue(Float::class.java.classLoader) as? Int,
         parcel.readValue(Float::class.java.classLoader) as? Float,
         parcel.readString()?.let { LocalDate.parse(it, DateTimeFormatter.ISO_DATE) }
     )

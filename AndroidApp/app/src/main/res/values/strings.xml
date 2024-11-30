@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Dr. Max 2.0</string>
+    <string name="app_name">Doctor Sanus</string>
     <string name="prev_week_btn">&lt;Anterior</string>
     <string name="next_week_btn">Următor></string>
     <string name="schedule_text">Ore disponibile pe </string>
