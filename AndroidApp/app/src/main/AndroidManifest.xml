@@ -10,37 +10,60 @@
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:networkSecurityConfig="@xml/network_security_config"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AndroidApp"
-        android:networkSecurityConfig="@xml/network_security_config"
         tools:targetApi="31">
-<!--        <activity-->
-<!--            android:name=".UserInfoView"-->
-<!--            android:exported="false" />-->
 
-<!--            -->
-<!--        <activity-->
-<!--            android:name=".LoginView"-->
-<!--            android:exported="true">-->
-<!--            <intent-filter>-->
-<!--                <action android:name="android.intent.action.MAIN" />-->
-<!--                <category android:name="android.intent.category.LAUNCHER" />-->
-<!--            </intent-filter>-->
-<!--        </activity>-->
-        <activity android:name=".Schedule"
+        <activity
+            android:name=".LoginActivity"
+            android:screenOrientation="portrait"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <meta-data
+                android:name="preloaded_fonts"
+                android:resource="@array/preloaded_fonts" />
         </activity>
 
-        <!-- NextActivity: Activitatea unde navigăm -->
-        <activity android:name=".NextActivity"
-            android:exported="true" />
+        <activity
+            android:name=".CreateAccountActivity"
+            android:screenOrientation="portrait"
+            android:exported="false">
+            <meta-data
+                android:name="preloaded_fonts"
+                android:resource="@array/preloaded_fonts" />
+        </activity>
 
+        <activity
+            android:name=".UserInfoActivity"
+            android:screenOrientation="portrait"
+            android:exported="false">
+            <meta-data
+                android:name="preloaded_fonts"
+                android:resource="@array/preloaded_fonts" />
+        </activity>
 
+        <activity
+            android:name=".Schedule"
+            android:screenOrientation="portrait"
+            android:exported="false">
+            <meta-data
+                android:name="preloaded_fonts"
+                android:resource="@array/preloaded_fonts" />
+        </activity>
+
+        <activity
+            android:name=".NextActivity"
+            android:screenOrientation="portrait"
+            android:exported="false" />
+
+        <meta-data
+            android:name="preloaded_fonts"
+            android:resource="@array/preloaded_fonts" />
     </application>
 
 </manifest>
