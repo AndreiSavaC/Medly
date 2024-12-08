@@ -16,6 +16,7 @@ import org.jetbrains.exposed.sql.SqlExpressionBuilder
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
+import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
@@ -42,6 +43,15 @@ fun Routing.appointmentRoute(appointmentService: AppointmentService,pacientServi
                 return@post
             }
 
+            val dayOfWeek = adjustedDate.dayOfWeek
+            if (dayOfWeek == DayOfWeek.SATURDAY || dayOfWeek == DayOfWeek.SUNDAY) {
+                call.respond(
+                    HttpStatusCode.BadRequest,
+                    "Appointments cannot be created on Saturdays or Sundays. Selected day: $dayOfWeek"
+                )
+                return@post
+            }
+
             val isAppointmentDateValid = isDateTimeValid(appointment.date,appointment.time)
             if (!validPacient) {
                 call.respond(HttpStatusCode.BadRequest, "Could not find pacient")
@@ -49,7 +59,7 @@ fun Routing.appointmentRoute(appointmentService: AppointmentService,pacientServi
                 call.respond(HttpStatusCode.BadRequest, "Could not find doctor")
             }
             else if(!isAppointmentDateValid){
-                call.respond(HttpStatusCode.BadRequest, "Cannot create appointment in the past or incorect time\nEach slot should begin either from :00 or :30 for ${appointment.date} and ${appointment.time}")
+                call.respond(HttpStatusCode.BadRequest, "Cannot create appointment in the past or incorect time\nEach slot should begin from 09:00 and end at 22 either from :00 or :30 for ${appointment.date} and ${appointment.time}")
             }
             else {
                 val updatedAppointment = appointment.copy(date = adjustedDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy")))
@@ -60,17 +70,19 @@ fun Routing.appointmentRoute(appointmentService: AppointmentService,pacientServi
                         call.respond(HttpStatusCode.Created, it)
                     } ?: call.respond(HttpStatusCode.BadRequest, "Error adding appointment")
                 }else{
-                    for (existingAppointment in existingAppointments) {
-                        if (existingAppointment.time.equals(updatedAppointment.time, ignoreCase = true)) {
-                            println("reached")
-                            call.respond(HttpStatusCode.BadRequest,"Duplicate appointment at date:${updatedAppointment.date} and time:${updatedAppointment.time} for doctor:${updatedAppointment.doctorId}")
-                        }else{
-                            println("or reached")
-                            appointmentService.addAppointment(updatedAppointment)?.let {
-                                call.respond(HttpStatusCode.Created, it)
-                            } ?: call.respond(HttpStatusCode.BadRequest, "Error adding appointment")
-                        }
+                    val conflictingAppointment = existingAppointments.any { it.time == updatedAppointment.time }
+                    if (conflictingAppointment) {
+                        call.respond(
+                            HttpStatusCode.BadRequest,
+                            "Duplicate appointment at date:${updatedAppointment.date} and time:${updatedAppointment.time} for doctor:${updatedAppointment.doctorId}"
+                        )
+                        return@post
                     }
+
+                    appointmentService.addAppointment(updatedAppointment)?.let {
+                        call.respond(HttpStatusCode.Created, it)
+                    } ?: call.respond(HttpStatusCode.BadRequest, "Error adding appointment")
+
                 }
             }
         }
@@ -109,6 +121,28 @@ fun Routing.appointmentRoute(appointmentService: AppointmentService,pacientServi
             }
 
             call.respond(HttpStatusCode.OK, availableSlots.map { it.format(DateTimeFormatter.ofPattern("HH:mm")) })
+        }
+
+        get("/doctors/{doctorId}") {
+            val docId = call.parameters["doctorId"]?.toInt()
+            if(docId != null) {
+                appointmentService.getAppointmentsByDoctorId(docId).let {
+                    call.respond(HttpStatusCode.OK, it)
+                }
+            }else{
+                call.respond(HttpStatusCode.BadRequest, "No doctor found")
+            }
+        }
+
+        get("/pacients/{pacientId}") {
+            val pacientId = call.parameters["pacientId"]?.toInt()
+            if(pacientId != null) {
+                appointmentService.getAppointmentByPacientId(pacientId).let {
+                    call.respond(HttpStatusCode.OK, it)
+                }
+            }else{
+                call.respond(HttpStatusCode.BadRequest, "No pacient found")
+            }
         }
 
         get("/{id}"){
@@ -153,11 +187,10 @@ fun Routing.appointmentRoute(appointmentService: AppointmentService,pacientServi
 fun isDateTimeValid(date:String,time:String): Boolean {
     val currentDate = LocalDateTime.now()
 
-    if(time.endsWith(":00") || time.endsWith(":30")) {
-
-    }else{
+    if(!time.endsWith(":00") && !time.endsWith(":30")) {
         return false
     }
+
 
     try {
 
@@ -165,6 +198,10 @@ fun isDateTimeValid(date:String,time:String): Boolean {
             DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm"))
 
         if (parsedDate.isBefore(currentDate)) {
+            return false
+        }
+
+        if(parsedDate.hour < 9 || parsedDate.hour > 21){
             return false
         }
 
