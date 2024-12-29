@@ -13,4 +13,7 @@ val appModule= module {
     single <AppointmentService> {
         AppointmentServiceImpl()
     }
+    single <CategoriesSymptomsService>{
+        CategoriesSymptomsServiceImpl()
+    }
 }
