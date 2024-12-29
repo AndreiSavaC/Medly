@@ -17,6 +17,7 @@ fun Application.configureDatabases() {
     val db=Database.connect(provideDataSource(jdbcUrl,driverClass))
 
     transaction(db){
+
         SchemaUtils.create(Doctors,Pacients,Appointments,Categories,Symptoms)
 
         val categoriesWithSymptoms = mapOf(
