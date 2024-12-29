@@ -16,7 +16,7 @@ import java.util.*
 import androidx.core.content.ContextCompat
 
 
-class Schedule : AppCompatActivity() {
+class ScheduleActivity : AppCompatActivity() {
 
     private lateinit var weekStart: Calendar
     private lateinit var weekRangeTextView: TextView
@@ -65,13 +65,13 @@ class Schedule : AppCompatActivity() {
                     Log.d("AvailableHours", "Available hours for $selectedDate: $availableHours")
                     updateHourList(availableHours)
                 } else {
-                    Toast.makeText(this@Schedule, "Failed to fetch available hours", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@ScheduleActivity, "Failed to fetch available hours", Toast.LENGTH_SHORT).show()
                     Log.e("AvailableHours", "Error fetching available hours: ${response.message()}")
                 }
             }
 
             override fun onFailure(call: Call<List<String>>, t: Throwable) {
-                Toast.makeText(this@Schedule, "Error: ${t.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@ScheduleActivity, "Error: ${t.message}", Toast.LENGTH_SHORT).show()
                 Log.e("AvailableHours", "Error: ${t.message}", t)
             }
         })
@@ -95,7 +95,7 @@ class Schedule : AppCompatActivity() {
             hourView.setOnClickListener {
                 val selectedDateFormatted = getFormattedDate(selectedDate)
 
-                val intent = Intent(this@Schedule, NextActivity::class.java).apply {
+                val intent = Intent(this@ScheduleActivity, SymptomsActivity::class.java).apply {
                     putExtra("selectedDate", selectedDateFormatted)
                     putExtra("selectedHour", hour)
                 }
@@ -145,13 +145,13 @@ class Schedule : AppCompatActivity() {
                 setPadding(16, 8, 16, 8)
                 layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
 
-                setTextColor(ContextCompat.getColor(this@Schedule, android.R.color.black))
+                setTextColor(ContextCompat.getColor(this@ScheduleActivity, android.R.color.black))
 
                 if (isPastDay) {
-                    setTextColor(ContextCompat.getColor(this@Schedule, android.R.color.darker_gray))
+                    setTextColor(ContextCompat.getColor(this@ScheduleActivity, android.R.color.darker_gray))
                     isClickable = false
                 } else {
-                    setTextColor(ContextCompat.getColor(this@Schedule, android.R.color.black))
+                    setTextColor(ContextCompat.getColor(this@ScheduleActivity, android.R.color.black))
                     isClickable = true
                 }
 

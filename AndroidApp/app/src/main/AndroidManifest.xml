@@ -28,7 +28,7 @@
 <!--                <category android:name="android.intent.category.LAUNCHER" />-->
 <!--            </intent-filter>-->
 <!--        </activity>-->
-        <activity android:name=".Schedule"
+        <activity android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -37,7 +37,12 @@
         </activity>
 
         <!-- NextActivity: Activitatea unde navigăm -->
-        <activity android:name=".NextActivity"
+
+        <activity android:name=".ScheduleActivity"
+            android:exported="true" />
+        <activity android:name=".SymptomsActivity"
+            android:exported="true" />
+        <activity android:name=".ConfirmAppointmentActivity"
             android:exported="true" />
 
 

@@ -11,11 +11,11 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class NextActivity : AppCompatActivity() {
+class ConfirmAppointmentActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_next)
+        setContentView(R.layout.activity_confirm_appointment)
 
         // Primește ziua și ora trimise din MainActivity
         val selectedDate = intent.getStringExtra("selectedDate") ?: ""
@@ -52,15 +52,15 @@ class NextActivity : AppCompatActivity() {
             .enqueue(object : Callback<ResponseBody> {
                 override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
                     if (response.isSuccessful) {
-                        Toast.makeText(this@NextActivity, "Programare realizată cu succes!", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@ConfirmAppointmentActivity, "Programare realizată cu succes!", Toast.LENGTH_SHORT).show()
                         finish() // Închide activitatea curentă
                     } else {
-                        Toast.makeText(this@NextActivity, "Eroare: ${response.message()}", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@ConfirmAppointmentActivity, "Eroare: ${response.message()}", Toast.LENGTH_SHORT).show()
                     }
                 }
 
                 override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                    Toast.makeText(this@NextActivity, "Eroare de rețea: ${t.message}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@ConfirmAppointmentActivity, "Eroare de rețea: ${t.message}", Toast.LENGTH_SHORT).show()
                 }
             })
     }
