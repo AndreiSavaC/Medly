@@ -42,6 +42,11 @@ class AppointmentServiceImpl : AppointmentService {
         Appointments.selectAll().where(Appointments.doctorId.eq(doctorId)).map { resultRowToAppointment(it) }
     }
 
+
+    override suspend fun getAppointmentByPacientId(pacientId: Int): List<Appointment> = dbQuery {
+        Appointments.selectAll().where(Appointments.pacientId.eq(pacientId)).map { resultRowToAppointment(it) }
+    }
+
     override suspend fun getAppointmentsByDoctorIdAndDate(doctorId: Int, date: String): List<Appointment> = dbQuery {
         Appointments.selectAll().where(Appointments.date.eq(date) and Appointments.doctorId.eq(doctorId)).map { resultRowToAppointment(it) }
     }
