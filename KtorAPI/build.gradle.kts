@@ -36,11 +36,13 @@ dependencies {
     implementation("com.h2database:h2:$h2Version")
     implementation("io.ktor:ktor-server-netty-jvm")
     implementation("ch.qos.logback:logback-classic:$logbackVersion")
-
+    implementation("io.ktor:ktor-client-core-jvm")
+    implementation("io.ktor:ktor-client-cio")
+    implementation("io.ktor:ktor-client-content-negotiation")
+    implementation("io.ktor:ktor-serialization-kotlinx-json")
     implementation("org.postgresql:postgresql:$postgresVersion")
     implementation("io.insert-koin:koin-ktor:$koinKtor")
     implementation("com.zaxxer:HikariCP:$hikaricpVersion")
-
     testImplementation("io.ktor:ktor-server-test-host-jvm")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlinVersion")
 }

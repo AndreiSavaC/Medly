@@ -1,27 +1,33 @@
 package com.proiectpdm.plugins
 
-import com.proiectpdm.db.AppointmentService
-import com.proiectpdm.db.CategoriesSymptomsService
-import com.proiectpdm.db.DoctorService
-import com.proiectpdm.db.PacientService
-import com.proiectpdm.routes.CategoriesSymptomsRoutes
-
-import com.proiectpdm.routes.appointmentRoute
-import com.proiectpdm.routes.doctorRoute
-import com.proiectpdm.routes.pacientRoute
+import com.proiectpdm.routers.appointments.appointmentRoutes
+import com.proiectpdm.routers.diseaseCategories.diseaseCategoriesRoutes
+import com.proiectpdm.routers.diseaseSymptoms.diseaseSymptomsRoutes
+import com.proiectpdm.routers.insurance.fictionalInsuredRoutes
+import com.proiectpdm.routers.user.userRoutes
+import com.proiectpdm.services.appointment.AppointmentService
+import com.proiectpdm.services.diseaseCategories.DiseaseCategoriesService
+import com.proiectpdm.services.diseaseSymptoms.DiseaseSymptomsService
+import com.proiectpdm.services.insurance.InsuranceService
+import com.proiectpdm.services.user.UserService
 
 import io.ktor.server.application.*
 import io.ktor.server.routing.*
 import org.koin.ktor.ext.get
 
-fun Application.configureRouting(doctorService: DoctorService=get(),pacientService: PacientService =get(),appointmentService: AppointmentService =get(),categoriesSymptomsService: CategoriesSymptomsService =get()) {
+fun Application.configureRouting(
+    userService: UserService = get(),
+    appointmentService: AppointmentService = get(),
+    diseaseCategoriesService: DiseaseCategoriesService = get(),
+    diseaseSymptomsService: DiseaseSymptomsService = get(),
+    insuranceService: InsuranceService = get(),
+) {
 
     routing {
-
-        doctorRoute(doctorService)
-        pacientRoute(pacientService)
-        appointmentRoute(appointmentService,pacientService,doctorService)
-        CategoriesSymptomsRoutes(categoriesSymptomsService)
-
+        userRoutes(userService)
+        appointmentRoutes(appointmentService)
+        diseaseCategoriesRoutes(diseaseCategoriesService)
+        diseaseSymptomsRoutes(diseaseSymptomsService)
+        fictionalInsuredRoutes(insuranceService)
     }
 }
