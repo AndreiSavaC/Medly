@@ -6,22 +6,29 @@ import com.proiectpdm.models.UsersTable.keycloakId
 import com.proiectpdm.plugins.dbQuery
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.transactions.transaction
 
 class UserServiceImpl : UserService {
 
-    override suspend fun getUsers(): List<User> = dbQuery {
+    override suspend fun getUsers(): List<User> = transaction {
         UsersTable.selectAll().map { resultRowToUser(it) }
     }
 
-    override suspend fun getUserById(id: Int): User? = dbQuery {
+    override suspend fun getUserById(id: Int): User? = transaction {
         UsersTable.selectAll().where { UsersTable.id eq id }.map { resultRowToUser(it) }.singleOrNull()
     }
 
-    override suspend fun getUserByKeycloakId(keycloakId: String): User? = dbQuery {
+    override suspend fun getUserByKeycloakId(keycloakId: String): User? = transaction {
         UsersTable.selectAll().where { UsersTable.keycloakId eq keycloakId }.map { resultRowToUser(it) }.singleOrNull()
     }
 
-    override suspend fun updateUser(user: User): User? = dbQuery {
+    override suspend fun updateUser(user: User): Boolean = transaction {
+        if (user.id == null) {
+            throw IllegalArgumentException("User ID cannot be null for update operation")
+        }
+        if (user.keycloakId == null) {
+            throw IllegalArgumentException("User Keycloak ID cannot be null for update operation")
+        }
         UsersTable.update({ UsersTable.id eq user.id }) {
             it[keycloakId] = user.keycloakId
             it[firstName] = user.firstName
@@ -34,16 +41,17 @@ class UserServiceImpl : UserService {
             it[doctorId] = user.doctorId
             it[isDoctor] = user.isDoctor
             it[isAdmin] = user.isAdmin
-        }
-
-        getUserById(user.id)
+        } > 0
     }
 
-    override suspend fun deleteUser(id: Int): Boolean = dbQuery {
+    override suspend fun deleteUser(id: Int): Boolean = transaction {
         UsersTable.deleteWhere { UsersTable.id eq id } > 0
     }
 
-    override suspend fun signUpUser(user: User, password: String): User? = dbQuery {
+    override suspend fun addUser(user: User): User? = transaction {
+        if (user.keycloakId == null) {
+            throw IllegalArgumentException("User Keycloak ID cannot be null for update operation")
+        }
         val insertStmt = UsersTable.insert {
             it[keycloakId] = user.keycloakId
             it[firstName] = user.firstName
@@ -57,7 +65,6 @@ class UserServiceImpl : UserService {
             it[isDoctor] = user.isDoctor
             it[isAdmin] = user.isAdmin
         }
-
         insertStmt.resultedValues?.singleOrNull()?.let { resultRowToUser(it) }
     }
 

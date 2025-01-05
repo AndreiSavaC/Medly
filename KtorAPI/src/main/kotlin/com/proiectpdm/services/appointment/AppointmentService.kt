@@ -10,7 +10,7 @@ interface AppointmentService {
     suspend fun getAppointmentsByPatientId(patientId: Int): List<Appointment>
     suspend fun getAppointmentsByDoctorIdAndDate(doctorId: Int, date: String): List<Appointment>
     suspend fun addAppointment(appointment: Appointment): Appointment?
-    suspend fun updateAppointment(appointment: Appointment): Boolean
+    suspend fun updateAppointment(id: Int, appointment: Appointment): Boolean
     suspend fun deleteAppointment(id: Int): Boolean
 
 }

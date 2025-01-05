@@ -9,6 +9,7 @@ import com.proiectpdm.services.appointment.AppointmentService
 import com.proiectpdm.services.diseaseCategories.DiseaseCategoriesService
 import com.proiectpdm.services.diseaseSymptoms.DiseaseSymptomsService
 import com.proiectpdm.services.insurance.InsuranceService
+import com.proiectpdm.services.keycloak.KeycloakService
 import com.proiectpdm.services.user.UserService
 
 import io.ktor.server.application.*
@@ -21,10 +22,11 @@ fun Application.configureRouting(
     diseaseCategoriesService: DiseaseCategoriesService = get(),
     diseaseSymptomsService: DiseaseSymptomsService = get(),
     insuranceService: InsuranceService = get(),
+    keycloakService: KeycloakService = get(),
 ) {
 
     routing {
-        userRoutes(userService)
+        userRoutes(userService, keycloakService)
         appointmentRoutes(appointmentService)
         diseaseCategoriesRoutes(diseaseCategoriesService)
         diseaseSymptomsRoutes(diseaseSymptomsService)

@@ -24,7 +24,7 @@ fun Routing.appointmentRoutes(
         }
 
         get("/{id}") {
-            val id = call.parameters["id"]?.toInt()
+            val id = call.parameters["id"]?.toIntOrNull()
             if (id == null) {
                 call.respond(HttpStatusCode.BadRequest)
                 return@get
@@ -35,7 +35,7 @@ fun Routing.appointmentRoutes(
         }
 
         get("/patient/{id}") {
-            val id = call.parameters["id"]?.toInt()
+            val id = call.parameters["id"]?.toIntOrNull()
             if (id == null) {
                 call.respond(HttpStatusCode.BadRequest)
                 return@get
@@ -61,6 +61,32 @@ fun Routing.appointmentRoutes(
                 if (appointments.isNotEmpty()) call.respond(HttpStatusCode.OK, appointments)
                 call.respond(HttpStatusCode.NotFound, "Appointments not found")
             }
+        }
+
+        get("/free-slots/{id}") {
+            val id = call.parameters["id"]?.toIntOrNull()
+            val date = call.request.queryParameters["date"]
+            if (id == null) {
+                call.respond(HttpStatusCode.BadRequest)
+                return@get
+            }
+            if (date.isNullOrBlank()) {
+                call.respond(HttpStatusCode.BadRequest)
+                return@get
+            }
+            val startTime = LocalTime.of(8, 0)
+            val endTime = LocalTime.of(14, 0)
+            val existingAppointments = appointmentService.getAppointmentsByDoctorIdAndDate(id, date).map {
+                LocalTime.parse(it.time, DateTimeFormatter.ofPattern("HH:mm"))
+            }
+            val allSlots = mutableListOf<LocalTime>()
+            var currentTime = startTime
+            while (currentTime.isBefore(endTime)) {
+                allSlots.add(currentTime)
+                currentTime = currentTime.plusMinutes(30)
+            }
+            val availableSlots = allSlots.subtract(existingAppointments).toList()
+            call.respond(HttpStatusCode.OK, availableSlots.map { it.format(DateTimeFormatter.ofPattern("HH:mm")) })
         }
 
         post {
@@ -108,86 +134,50 @@ fun Routing.appointmentRoutes(
             } ?: call.respond(HttpStatusCode.BadRequest, "Error adding appointment.")
         }
 
-
-
-
         put("/{id}") {
-            val id = call.parameters["id"]?.toInt()
-            if (id != null) {
-                val updatedAppointment = call.receive<Appointment>().copy(id = id)
-                appointmentService.updateAppointment(updatedAppointment)?.let {
-                    call.respond(HttpStatusCode.OK, it)
-                } ?: call.respond(HttpStatusCode.NotFound, "Error Updating appointment")
-            } else {
-                call.respond(HttpStatusCode.BadRequest, "Id can not be null")
+            val id = call.parameters["id"]?.toIntOrNull()
+            if (id == null) {
+                call.respond(HttpStatusCode.BadRequest, "Invalid or missing ID")
+                return@put
             }
+            val updatedAppointment = call.receive<Appointment>()
+            val wasUpdated = appointmentService.updateAppointment(id, updatedAppointment)
+            if (wasUpdated) call.respond(HttpStatusCode.OK, "Appointment record updated successfully")
+            call.respond(HttpStatusCode.NotFound, "No appointment found with ID $id")
+
         }
 
         delete("/{id}") {
-            val id = call.parameters["id"]?.toInt()
-            if (id != null) {
-                if (appointmentService.deleteAppointment(id)) {
-                    call.respond(HttpStatusCode.NoContent)
-                } else {
-                    call.respond(HttpStatusCode.NotFound, "Appointment not found")
-                }
-            } else {
-                call.respond(HttpStatusCode.BadRequest, "Id can not be null")
+            val id = call.parameters["id"]?.toIntOrNull()
+            if (id == null) {
+                call.respond(HttpStatusCode.BadRequest, "Invalid or missing ID")
+                return@delete
             }
+            val wasDeleted = appointmentService.deleteAppointment(id)
+            if (wasDeleted) call.respond(HttpStatusCode.OK, "Appointment record deleted successfully")
+            call.respond(HttpStatusCode.NotFound, "No appointment found with ID $id")
         }
-
     }
 }
 
 fun isDateTimeValid(date: String, time: String): Boolean {
     val currentDate = LocalDateTime.now()
-
-
     if (!time.endsWith(":00") && !time.endsWith(":30")) {
         return false
     }
-
-
-
     try {
-
         val parsedDate = LocalDateTime.parse(
             "$date $time", DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm")
         )
-
         if (parsedDate.isBefore(currentDate)) {
             return false
         }
-
         if (parsedDate.hour < 9 || parsedDate.hour > 21) {
             return false
         }
-
-
     } catch (e: Exception) {
         println(e)
         return false
     }
     return true
 }
-
-
-//            val startTime = LocalTime.of(8, 0)
-//            val endTime = LocalTime.of(14, 0)
-//
-//            val existingAppointments = appointmentService.getAppointmentByDate(dateParam).map {
-//                LocalTime.parse(it.time, DateTimeFormatter.ofPattern("HH:mm"))
-//            }
-//
-//            val allSlots = mutableListOf<LocalTime>()
-//            var currentTime = startTime
-//            while (currentTime.isBefore(endTime)) {
-//                allSlots.add(currentTime)
-//                currentTime = currentTime.plusMinutes(30)
-//            }
-//
-//            val availableSlots = allSlots.filter { slot ->
-//                existingAppointments.none { it == slot }
-//            }
-//
-//            call.respond(HttpStatusCode.OK, availableSlots.map { it.format(DateTimeFormatter.ofPattern("HH:mm")) })

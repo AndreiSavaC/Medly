@@ -8,6 +8,8 @@ import com.proiectpdm.services.diseaseSymptoms.DiseaseSymptomsService
 import com.proiectpdm.services.diseaseSymptoms.DiseaseSymptomsServiceImpl
 import com.proiectpdm.services.insurance.InsuranceService
 import com.proiectpdm.services.insurance.InsuranceServiceImpl
+import com.proiectpdm.services.keycloak.KeycloakService
+import com.proiectpdm.services.keycloak.KeycloakServiceImpl
 import com.proiectpdm.services.user.UserService
 import com.proiectpdm.services.user.UserServiceImpl
 import org.koin.dsl.module
@@ -31,5 +33,9 @@ val appModule = module {
 
     single<InsuranceService> {
         InsuranceServiceImpl()
+    }
+
+    single<KeycloakService> {
+        KeycloakServiceImpl()
     }
 }

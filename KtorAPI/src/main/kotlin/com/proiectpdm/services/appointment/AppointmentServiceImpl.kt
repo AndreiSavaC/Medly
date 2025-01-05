@@ -46,8 +46,8 @@ class AppointmentServiceImpl : AppointmentService {
     }
 
 
-    override suspend fun updateAppointment(appointment: Appointment): Boolean = transaction {
-        AppointmentsTable.update({ AppointmentsTable.id.eq(appointment.id) }) {
+    override suspend fun updateAppointment(id: Int, appointment: Appointment): Boolean = transaction {
+        AppointmentsTable.update({ AppointmentsTable.id eq id }) {
             it[date] = appointment.date
             it[time] = appointment.time
             it[patientId] = appointment.patientId
