@@ -5,11 +5,9 @@ import android.os.Bundle
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ContentInfoCompat.Flags
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
-import com.example.androidapp.models.UserInfo
 
 class MainMenuActivity : AppCompatActivity() {
 
@@ -20,15 +18,8 @@ class MainMenuActivity : AppCompatActivity() {
         finish()
     }
 
-    private fun getCurrentUserInfo(): UserInfo {
-        val user = UserInfo()
-        user.firstName = "Alexandru-Vasile"
-        user.lastName = "Stelea"
-        user.email = "alexregele@yahoo.com"
-        user.gender = "Regele"
-        user.weight = 70.0f
-        user.height = 173
-        return user
+    private fun getCurrentUserInfo() {
+
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,8 +35,8 @@ class MainMenuActivity : AppCompatActivity() {
         WindowInsetsControllerCompat(window, findViewById(R.id.main)).isAppearanceLightStatusBars =
             true
 
-        val currentUser = getCurrentUserInfo()
+
         val userNameTextView = findViewById<TextView>(R.id.userNameTextView)
-        userNameTextView.text = currentUser.firstName + " " + currentUser.lastName
+
     }
 }

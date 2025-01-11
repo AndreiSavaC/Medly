@@ -2,6 +2,7 @@ package com.example.androidapp
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,11 +10,17 @@ import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import com.example.androidapp.models.UserInfo
+import com.example.androidapp.api.RetrofitClient
+import com.example.androidapp.models.Insurance
+import com.example.androidapp.models.UserResponse
+import com.example.androidapp.models.UserRequest
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class ExtraInfoFragment : Fragment() {
 
-    private var partialUserInfo: UserInfo? = null
+    private var partialUserInfo: Insurance? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,13 +31,49 @@ class ExtraInfoFragment : Fragment() {
     }
 
     private fun createAccount(
-        partialUserInfo: UserInfo,
+        partialUserInfo: Insurance,
         email: String,
         password: String,
         weight: Float,
         height: Int
     ): Boolean {
-        return true
+        // Create the UserRequest object
+        val userRequest = UserRequest(
+            firstName = partialUserInfo.firstName,
+            lastName = partialUserInfo.lastName,
+            email = email,
+            gender = partialUserInfo.gender,
+            height = height.toFloat(), // Assuming height is an Int
+            weight = weight,
+            birthday = partialUserInfo.birthday,  // Assuming birthday is a String
+            doctorId = partialUserInfo.doctorId,
+            isDoctor = false, // You can adjust this based on your logic
+            isAdmin = false,  // Adjust if needed
+        )
+
+        // Make the POST request using Retrofit
+        RetrofitClient.userService.createUser(userRequest,password).enqueue(object : Callback<UserResponse> {
+            override fun onResponse(call: Call<UserResponse>, response: Response<UserResponse>) {
+                if (response.isSuccessful) {
+                    // Handle success
+                    val createdUser = response.body()
+                    if (createdUser != null) {
+                        // Successfully created the user, you can handle the response
+                        Log.d("CreateAccount", "User created successfully: $createdUser")
+                    }
+                } else {
+                    // Handle failure, perhaps the user already exists or invalid data
+                    Log.e("CreateAccount", "Error: ${response.errorBody()?.string()}")
+                }
+            }
+
+            override fun onFailure(call: Call<UserResponse>, t: Throwable) {
+                // Handle failure (network error, etc.)
+                Log.e("CreateAccount", "Error: ${t.message}")
+            }
+        })
+
+        return true  // You can return true or false based on whether you want to return something directly
     }
 
     override fun onCreateView(
@@ -115,7 +158,7 @@ class ExtraInfoFragment : Fragment() {
 
     companion object {
         @JvmStatic
-        fun newInstance(userInfo: UserInfo) = ExtraInfoFragment().apply {
+        fun newInstance(userInfo: Insurance) = ExtraInfoFragment().apply {
             arguments = Bundle().apply {
                 putParcelable("partialUserInfo", userInfo)
             }

@@ -5,7 +5,7 @@ import org.jetbrains.exposed.sql.Table
 
 @Serializable
 data class DiseaseSymptom(
-    val id: Int = 0, val name: String, val categoryId: Int
+    val id: Int? = null, val name: String, val categoryId: Int
 )
 
 object DiseaseSymptomsTable : Table(name = "disease_symptoms") {

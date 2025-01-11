@@ -10,11 +10,11 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import com.example.androidapp.models.UserInfo
+import com.example.androidapp.models.Insurance
 
 class VerifyInfoFragment : Fragment() {
 
-    private var partialUserInfo: UserInfo? = null
+    private var partialUserInfo: Insurance? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,8 +37,12 @@ class VerifyInfoFragment : Fragment() {
         partialUserInfo?.let {
             firstNameTextView.text = it.firstName
             lastNameTextView.text = it.lastName
-            genderTextView.text = it.gender
-            birthDateTextView.text = it.birthDate.toString()
+            if(it.gender == "male") {
+                genderTextView.text = "Masculin"
+            } else {
+                genderTextView.text = "Feminin"
+            }
+            birthDateTextView.text = it.birthday
         }
 
         confirmButton.isEnabled = false
@@ -68,7 +72,7 @@ class VerifyInfoFragment : Fragment() {
 
     companion object {
         @JvmStatic
-        fun newInstance(userInfo: UserInfo) = VerifyInfoFragment().apply {
+        fun newInstance(userInfo: Insurance) = VerifyInfoFragment().apply {
             arguments = Bundle().apply {
                 putParcelable("partialUserInfo", userInfo)
             }
