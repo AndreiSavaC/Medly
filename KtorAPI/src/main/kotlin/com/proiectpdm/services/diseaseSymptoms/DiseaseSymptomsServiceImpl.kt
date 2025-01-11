@@ -30,6 +30,9 @@ class DiseaseSymptomsServiceImpl : DiseaseSymptomsService {
     }
 
     override suspend fun updateSymptom(id: Int, symptoms: DiseaseSymptom): Boolean = dbQuery {
+        if (symptoms.id == null) {
+            throw IllegalArgumentException("Disease symptom ID cannot be null for update operation")
+        }
         DiseaseSymptomsTable.update({ DiseaseSymptomsTable.id.eq(symptoms.id) }) {
             it[name] = symptoms.name
             it[categoryId] = symptoms.categoryId
