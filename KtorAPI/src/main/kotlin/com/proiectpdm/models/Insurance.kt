@@ -11,7 +11,7 @@ data class Insurance(
     val gender: String,
     val birthday: String,
     val doctorId: Int,
-    val id: Int
+    val id: Int? = null
 )
 
 object InsuranceTable : Table(name = "insurances") {
