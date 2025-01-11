@@ -27,7 +27,7 @@ data class Credential(
 class KeycloakServiceImpl : KeycloakService {
 
     override suspend fun createUser(email: String, password: String): String {
-        val keycloakBaseUrl = "http://localhost:8080/admin/realms/HealthyApp"
+        val keycloakBaseUrl = "http://keycloak:8080/admin/realms/HealthyApp"
         val adminToken = getKeycloakAdminToken()
         val client = HttpClient(CIO) {
             install(ContentNegotiation) {
@@ -62,7 +62,7 @@ class KeycloakServiceImpl : KeycloakService {
     }
 
     private suspend fun getKeycloakAdminToken(): String {
-        val keycloakTokenUrl = "http://localhost:8080/realms/master/protocol/openid-connect/token"
+        val keycloakTokenUrl = "http://keycloak:8080/realms/master/protocol/openid-connect/token"
         val clientId = "admin-cli"
         val username = "admin"
         val password = "q1w2e3"
