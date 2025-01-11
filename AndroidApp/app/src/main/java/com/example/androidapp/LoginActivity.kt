@@ -2,6 +2,7 @@ package com.example.androidapp
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
@@ -10,6 +11,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import com.auth0.android.jwt.JWT
+import com.example.androidapp.api.RetrofitClient
+import com.example.androidapp.api.UserResponse
 import okhttp3.*
 import org.json.JSONObject
 import java.io.IOException
@@ -82,23 +86,80 @@ class LoginActivity : AppCompatActivity() {
 
             override fun onResponse(call: Call, response: Response) {
                 if (response.isSuccessful) {
-                    val responseBody = response.body?.string()
-                    val json = JSONObject(responseBody)
-                    val accessToken = json.getString("access_token")
+                    val responseBody = response.body?.string();
+                    val json = JSONObject(responseBody);
+                    val accessToken = json.getString("access_token");
 
-                    runOnUiThread {
-                        // Proceed to the next screen
-                        val intent = Intent(this@LoginActivity, MainMenuActivity::class.java)
-                        intent.putExtra("ACCESS_TOKEN", accessToken)
-                        startActivity(intent)
-                        finish()
+                    val keycloakUserId = getKeycloakUserIdFromToken(accessToken);
+                    Log.d(("LoginActivityLog"), "Keycloak user ID: $keycloakUserId");
+
+                    if (keycloakUserId == null) {
+                        Log.d("LoginActivityLog", "Invalid token or missing sub");
+                        runOnUiThread {
+                            Toast.makeText(this@LoginActivity, "Authentication failed. Please try again.", Toast.LENGTH_LONG).show();
+                        };
+                        return;
                     }
+
+                    val callUser = RetrofitClient.userService.getUserByKeycloakId(keycloakUserId);
+                    callUser.enqueue(object : retrofit2.Callback<UserResponse> {
+                        override fun onResponse(call: retrofit2.Call<UserResponse>, response: retrofit2.Response<UserResponse>) {
+                            if (response.isSuccessful) {
+                                val userResponse = response.body();
+                                Log.d("LoginActivityLog", "User : $userResponse");
+                                if (userResponse != null) {
+                                    val isDoctor = userResponse.isDoctor;
+                                    runOnUiThread {
+                                        if (isDoctor) {
+                                            val intent = Intent(this@LoginActivity, DoctorLandingActivity::class.java);
+                                            intent.putExtra("ACCESS_TOKEN", accessToken);
+                                            startActivity(intent);
+                                            finish();
+                                        } else {
+                                            val intent = Intent(this@LoginActivity, LandingActivity::class.java);
+                                            intent.putExtra("ACCESS_TOKEN", accessToken);
+                                            startActivity(intent);
+                                            finish();
+                                        }
+                                    };
+                                } else {
+                                    Log.d("LoginActivityLog", "User not found for Keycloak ID: $keycloakUserId");
+                                    runOnUiThread {
+                                        Toast.makeText(this@LoginActivity, "User not found.", Toast.LENGTH_LONG).show();
+                                    };
+                                }
+                            } else {
+                                Log.d("LoginActivityLog", "Error fetching user: ${response.message()}");
+                                runOnUiThread {
+                                    Toast.makeText(this@LoginActivity, "1An error occurred. Please try again.", Toast.LENGTH_LONG).show();
+                                };
+                            }
+                        }
+
+                        override fun onFailure(call: retrofit2.Call<UserResponse>, t: Throwable) {
+                            Log.d("LoginActivityLog", "Error on user fetch request: ${t.message}");
+                            runOnUiThread {
+                                Toast.makeText(this@LoginActivity, "Failed to fetch user details. Please try again.", Toast.LENGTH_LONG).show();
+                            };
+                        }
+                    });
                 } else {
+                    Log.d("LoginActivityLog", "Login failed with response: ${response.message}");
                     runOnUiThread {
-                        Toast.makeText(this@LoginActivity, "Login failed: ${response.message}", Toast.LENGTH_LONG).show()
-                    }
+                        Toast.makeText(this@LoginActivity, "Login failed. Please check your credentials.", Toast.LENGTH_LONG).show();
+                    };
                 }
             }
-        })
+        });
+    }
+
+    private fun getKeycloakUserIdFromToken(accessToken: String): String? {
+        return try {
+            val jwt = JWT(accessToken);
+            jwt.getClaim("sub").asString();
+        } catch (e: Exception) {
+            Log.d("LoginActivityLog", "Error parsing token: ${e.message}");
+            null;
+        };
     }
 }

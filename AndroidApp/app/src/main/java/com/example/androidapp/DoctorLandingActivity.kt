@@ -9,14 +9,14 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import java.util.*
 
-class DViewActivity : AppCompatActivity() {
+class DoctorLandingActivity : AppCompatActivity() {
 
     private lateinit var appointmentAdapter: AppointmentAdapter
     private val appointmentsList = mutableListOf<Appointment>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_d_view)
+        setContentView(R.layout.activity_doctor_landing)
 
         val recyclerViewAppointments: RecyclerView = findViewById(R.id.recyclerViewAppointments)
         appointmentAdapter = AppointmentAdapter(appointmentsList)

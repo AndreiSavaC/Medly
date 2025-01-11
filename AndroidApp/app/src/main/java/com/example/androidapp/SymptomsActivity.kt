@@ -2,21 +2,27 @@ package com.example.androidapp
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.MenuItem
-import android.widget.Button
-import android.widget.CheckBox
-import android.widget.LinearLayout
-import android.widget.TextView
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import com.example.androidapp.api.RetrofitClient
+import com.example.androidapp.api.CategoryResponse
+import com.example.androidapp.api.SymptomResponse
 import com.example.androidapp.models.Category
 import com.example.androidapp.models.Symptom
-
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class SymptomsActivity : AppCompatActivity() {
 
     private lateinit var confirmButton: Button
+    private lateinit var layout: LinearLayout
+    private val categories = mutableListOf<Category>()
+    private val symptoms = mutableListOf<Symptom>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,170 +35,80 @@ class SymptomsActivity : AppCompatActivity() {
             setHomeAsUpIndicator(R.drawable.ic_arrow_back)
         }
 
+        layout = findViewById(R.id.categoriesLayout)
+        confirmButton = findViewById(R.id.confirmButton)
+
         val selectedDate = intent.getStringExtra("selectedDate")
         val selectedHour = intent.getStringExtra("selectedHour")
 
-        val categories = listOf(
-            Category("Probleme Respiratorii", listOf(
-                Symptom("Tuse"),
-                Symptom("Dificultăți de respirație"),
-                Symptom("Respirație șuierătoare"),
-                Symptom("Durere în piept la respirație"),
-                Symptom("Secreții nazale abundente"),
-                Symptom("Congestie nazală"),
-                Symptom("Strănut frecvent"),
-                Symptom("Voce răgușită"),
-                Symptom("Lipsă de aer la efort minim"),
-                Symptom("Episod de sufocare")
-            )),
-            Category("Probleme Gastro-Intestinale", listOf(
-                Symptom("Dureri abdominale"),
-                Symptom("Greață"),
-                Symptom("Vărsături"),
-                Symptom("Diaree"),
-                Symptom("Constipație"),
-                Symptom("Balonare"),
-                Symptom("Arsuri la stomac (reflux gastric)"),
-                Symptom("Senzație de greutate după masă"),
-                Symptom("Pierderea apetitului"),
-                Symptom("Sânge în scaun"),
-                Symptom("Senzație de greață fără motiv clar"),
-                Symptom("Dificultăți la înghițire")
-            )),
-            Category("Probleme Cardiovasculare", listOf(
-                Symptom("Dureri în piept"),
-                Symptom("Palpitații"),
-                Symptom("Amețeală"),
-                Symptom("Pierderea cunoștinței"),
-                Symptom("Respirație dificilă în poziție culcată"),
-                Symptom("Umflarea picioarelor sau a gleznelor"),
-                Symptom("Oboseală extremă la eforturi mici"),
-                Symptom("Puls neregulat sau slab")
-            )),
-            Category("Probleme Musculo-Scheletale", listOf(
-                Symptom("Durere de spate"),
-                Symptom("Dureri articulare"),
-                Symptom("Dureri musculare"),
-                Symptom("Umflături articulare"),
-                Symptom("Limitare în mișcare"),
-                Symptom("Rigiditate musculară"),
-                Symptom("Slăbiciune musculară"),
-                Symptom("Senzație de crampe musculare"),
-                Symptom("Durere după efort fizic")
-            )),
-            Category("Probleme Neurologice", listOf(
-                Symptom("Cefalee (durere de cap)"),
-                Symptom("Amețeli"),
-                Symptom("Pierderi de echilibru"),
-                Symptom("Amorțeală sau furnicături"),
-                Symptom("Tremor"),
-                Symptom("Convulsii"),
-                Symptom("Slăbiciune bruscă într-o parte a corpului"),
-                Symptom("Tulburări de vorbire"),
-                Symptom("Pierderi temporare de memorie"),
-                Symptom("Probleme de concentrare"),
-                Symptom("Senzație de confuzie")
-            )),
-            Category("Probleme Dermatologice", listOf(
-                Symptom("Erupții cutanate"),
-                Symptom("Mâncărimi"),
-                Symptom("Roșeață"),
-                Symptom("Inflamație"),
-                Symptom("Leziuni deschise sau ulcere"),
-                Symptom("Piele uscată sau descuamată"),
-                Symptom("Căderea părului"),
-                Symptom("Pete pe piele (albe, maronii, roșii)"),
-                Symptom("Acnee severă"),
-                Symptom("Schimbări ale unghiilor (culoare sau structură)")
-            )),
-            Category("Probleme Urinare", listOf(
-                Symptom("Durere la urinare"),
-                Symptom("Senzație de arsură"),
-                Symptom("Urină cu sânge"),
-                Symptom("Nevoia frecventă de a urina"),
-                Symptom("Dificultăți în inițierea urinării"),
-                Symptom("Jet de urină slab sau intermitent"),
-                Symptom("Senzație de golire incompletă a vezicii"),
-                Symptom("Urină tulbure sau cu miros neplăcut")
-            )),
-            Category("Probleme Oftalmologice", listOf(
-                Symptom("Durere oculară"),
-                Symptom("Roșeață oculară"),
-                Symptom("Senzație de corp străin"),
-                Symptom("Vedere încețoșată"),
-                Symptom("Lăcrimare excesivă"),
-                Symptom("Sensibilitate la lumină"),
-                Symptom("Pierderea bruscă a vederii"),
-                Symptom("Mâncărime la nivelul ochilor")
-            )),
-            Category("Probleme ORL (Otorinolaringologice)", listOf(
-                Symptom("Durere în gât"),
-                Symptom("Dificultăți de înghițire"),
-                Symptom("Urechi înfundate"),
-                Symptom("Senzație de presiune în sinusuri"),
-                Symptom("Pierderea auzului"),
-                Symptom("Senzație de zgomot în urechi (tinitus)"),
-                Symptom("Ganglioni limfatici umflați")
-            )),
-            Category("Probleme Generale", listOf(
-                Symptom("Febră"),
-                Symptom("Oboseală extremă"),
-                Symptom("Pierdere bruscă în greutate"),
-                Symptom("Frisoane"),
-                Symptom("Transpirații nocturne"),
-                Symptom("Lipsa poftei de mâncare"),
-                Symptom("Slăbiciune generalizată"),
-                Symptom("Dureri musculare difuze"),
-                Symptom("Stare generală de rău (indispoziție)")
-            )),
-            Category("Probleme Emoționale și Psihologice", listOf(
-                Symptom("Anxietate"),
-                Symptom("Depresie"),
-                Symptom("Insomnie"),
-                Symptom("Stări de panică"),
-                Symptom("Gânduri negative"),
-                Symptom("Iritabilitate crescută"),
-                Symptom("Dificultăți de socializare"),
-                Symptom("Oboseală mentală")
-            )),
-            Category("Probleme Endocrine și Hormonale", listOf(
-                Symptom("Senzație de sete excesivă"),
-                Symptom("Urinare frecventă"),
-                Symptom("Creștere rapidă în greutate"),
-                Symptom("Senzație de frig constant"),
-                Symptom("Pierdere de păr"),
-                Symptom("Transpirație excesivă"),
-                Symptom("Ciclu menstrual neregulat"),
-                Symptom("Probleme legate de libido")
-            ))
-        )
-        confirmButton = findViewById(R.id.confirmButton)
+        loadCategoriesAndSymptoms(selectedDate, selectedHour)
+    }
 
-        val layout = findViewById<LinearLayout>(R.id.categoriesLayout)
+    private fun loadCategoriesAndSymptoms(selectedDate: String?, selectedHour: String?) {
+        RetrofitClient.symptomService.getCategories().enqueue(object : Callback<List<CategoryResponse>> {
+            override fun onResponse(
+                call: Call<List<CategoryResponse>>,
+                response: Response<List<CategoryResponse>>
+            ) {
+                if (response.isSuccessful) {
+                    Log.d("Categories", "Fetched categories successfully: ${response.body()}")
+                    categories.clear()
+                    categories.addAll(response.body()?.map {
+                        Category(it.id, it.name)
+                    } ?: emptyList())
+                    loadSymptoms(selectedDate, selectedHour)
+                } else {
+                    Log.d("Categories", "Failed to fetch categories. Response code: ${response.code()}, message: ${response.message()}")
+                }
+            }
 
+            override fun onFailure(call: Call<List<CategoryResponse>>, t: Throwable) {
+                Log.e("Categories", "Error fetching categories: ${t.message}", t)
+            }
+        })
+    }
+
+    private fun loadSymptoms(selectedDate: String?, selectedHour: String?) {
+        RetrofitClient.symptomService.getSymptoms().enqueue(object : Callback<List<SymptomResponse>> {
+            override fun onResponse(
+                call: Call<List<SymptomResponse>>,
+                response: Response<List<SymptomResponse>>
+            ) {
+                if (response.isSuccessful) {
+                    symptoms.clear()
+                    symptoms.addAll(response.body()?.map {
+                        Symptom(it.id, it.name, it.categoryId)
+                    } ?: emptyList())
+                    populateCategoriesAndSymptoms(selectedDate, selectedHour)
+                } else {
+                    showError("Failed to fetch symptoms")
+                }
+            }
+
+            override fun onFailure(call: Call<List<SymptomResponse>>, t: Throwable) {
+                showError("Error: ${t.message}")
+            }
+        })
+    }
+
+    private fun populateCategoriesAndSymptoms(selectedDate: String?, selectedHour: String?) {
         val inflater = LayoutInflater.from(this)
-
         val colorStateList = resources.getColorStateList(R.color.checkbox_color, theme)
-
-        var isAnySymptomSelected = false
 
         categories.forEach { category ->
             val categoryView = inflater.inflate(R.layout.item_category, layout, false)
 
             val categoryTitle = categoryView.findViewById<TextView>(R.id.categoryTitle)
-            categoryTitle.text = category.title
+            categoryTitle.text = category.name
 
             val symptomLayout = categoryView.findViewById<LinearLayout>(R.id.symptomLayout)
-            category.symptoms.forEach { symptom ->
+            symptoms.filter { it.categoryId == category.id }.forEach { symptom ->
                 val symptomCheckBox = CheckBox(this)
                 symptomCheckBox.text = symptom.name
                 symptomCheckBox.buttonTintList = colorStateList
                 symptomCheckBox.setOnCheckedChangeListener { _, isChecked ->
                     symptom.isSelected = isChecked
-                    isAnySymptomSelected = categories.any { category ->
-                        category.symptoms.any { it.isSelected }
-                    }
-                    updateConfirmButtonState(isAnySymptomSelected)
+                    updateConfirmButtonState()
                 }
                 symptomLayout.addView(symptomCheckBox)
             }
@@ -200,39 +116,44 @@ class SymptomsActivity : AppCompatActivity() {
             layout.addView(categoryView)
         }
 
-        findViewById<Button>(R.id.confirmButton).setOnClickListener {
-            val selectedSymptoms = mutableListOf<String>()
-            val selectedCategories = mutableListOf<String>()
+        confirmButton.setOnClickListener {
 
-            categories.forEach { category ->
-                val selectedInCategory = mutableListOf<String>()
-                category.symptoms.forEach { symptom ->
-                    if (symptom.isSelected) {
-                        selectedInCategory.add(symptom.name)
-                    }
-                }
-                if (selectedInCategory.isNotEmpty()) {
-                    selectedCategories.add(category.title)
-                    selectedSymptoms.add("${category.title}: ${selectedInCategory.joinToString(", ")}")
-                }
+            val selectedSymptomsByCategory = categories.associate { category ->
+
+                val selectedSymptomsInCategory = symptoms.filter { it.isSelected && it.categoryId == category.id }
+                    .map { it.name }
+                category.name to selectedSymptomsInCategory
+            }.filter { it.value.isNotEmpty() }
+
+            val categorySymptomsList = ArrayList<String>()
+            for ((categoryName, symptomNames) in selectedSymptomsByCategory) {
+
+                val joinedSymptoms = symptomNames.joinToString(",")
+                categorySymptomsList.add("$categoryName:$joinedSymptoms")
             }
 
             val intent = Intent(this, ConfirmAppointmentActivity::class.java)
-            intent.putStringArrayListExtra("selectedSymptoms", ArrayList(selectedSymptoms))
+
             intent.putExtra("selectedDate", selectedDate)
             intent.putExtra("selectedHour", selectedHour)
+
+            intent.putStringArrayListExtra("categorySymptoms", categorySymptomsList)
+
             startActivity(intent)
         }
     }
 
-    private fun updateConfirmButtonState(isAnySymptomSelected: Boolean) {
-        if (isAnySymptomSelected) {
-            confirmButton.isEnabled = true
-            confirmButton.backgroundTintList = resources.getColorStateList(R.color.primaryColor, theme)
-        } else {
-            confirmButton.isEnabled = false
-            confirmButton.backgroundTintList = resources.getColorStateList(R.color.gray_200, theme)
-        }
+    private fun updateConfirmButtonState() {
+        val isAnySymptomSelected = symptoms.any { it.isSelected }
+        confirmButton.isEnabled = isAnySymptomSelected
+        confirmButton.backgroundTintList = resources.getColorStateList(
+            if (isAnySymptomSelected) R.color.primaryColor else R.color.gray_200,
+            theme
+        )
+    }
+
+    private fun showError(message: String) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

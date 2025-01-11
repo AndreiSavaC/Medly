@@ -23,7 +23,7 @@
             }
 
             btnEditProfile.setOnClickListener {
-                val intent = Intent(this, DViewActivity::class.java)
+                val intent = Intent(this, DoctorLandingActivity::class.java)
                 startActivity(intent)
             }
 
