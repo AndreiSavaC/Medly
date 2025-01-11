@@ -1,7 +1,0 @@
-{
-  "client_id": "your-client-id",
-  "redirect_uri": "com.example.androidapp:/oauth2redirect",
-  "authorization_endpoint": "https://your-keycloak-url/auth/realms/your-realm/protocol/openid-connect/auth",
-  "token_endpoint": "https://your-keycloak-url/auth/realms/your-realm/protocol/openid-connect/token",
-  "end_session_endpoint": "https://your-keycloak-url/auth/realms/your-realm/protocol/openid-connect/logout"
-}
