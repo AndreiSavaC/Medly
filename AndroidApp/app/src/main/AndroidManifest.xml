@@ -64,6 +64,14 @@
                 android:name="preloaded_fonts"
                 android:resource="@array/preloaded_fonts" />
         </activity>
+        <activity
+                android:name=".DViewActivity"
+            android:screenOrientation="portrait"
+            android:exported="false">
+            <meta-data
+                android:name="preloaded_fonts"
+                android:resource="@array/preloaded_fonts" />
+        </activity>
 
         <activity
             android:name=".NextActivity"
