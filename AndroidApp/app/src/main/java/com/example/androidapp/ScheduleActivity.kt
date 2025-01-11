@@ -7,7 +7,9 @@ import android.widget.TextView
 import android.widget.Toast
 import android.view.Gravity
 import android.util.Log
+import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import com.example.androidapp.api.RetrofitClient
 import retrofit2.Call
 import retrofit2.Callback
@@ -16,7 +18,7 @@ import java.util.*
 import androidx.core.content.ContextCompat
 
 
-class Schedule : AppCompatActivity() {
+class ScheduleActivity : AppCompatActivity() {
 
     private lateinit var weekStart: Calendar
     private lateinit var weekRangeTextView: TextView
@@ -26,7 +28,20 @@ class Schedule : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.schedule_activity)
+        setContentView(R.layout.activity_schedule)
+
+        val toolbar: Toolbar = findViewById(R.id.toolbar)
+        setSupportActionBar(toolbar)
+        supportActionBar?.apply {
+            setDisplayHomeAsUpEnabled(true)
+            setHomeAsUpIndicator(R.drawable.ic_arrow_back)
+        }
+
+
+        if (supportActionBar != null) {
+            supportActionBar?.setDisplayHomeAsUpEnabled(true)
+            supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_arrow_back)
+        }
 
         weekRangeTextView = findViewById(R.id.txtWeekRange)
         weekCalendar = findViewById(R.id.weekCalendar)
@@ -54,6 +69,15 @@ class Schedule : AppCompatActivity() {
             updateWeekDisplay()
         }
     }
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            android.R.id.home -> {
+                onBackPressedDispatcher.onBackPressed()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
 
     private fun fetchAppointmentsForSelectedDate(selectedDate: String) {
         val doctorId = 1
@@ -65,13 +89,13 @@ class Schedule : AppCompatActivity() {
                     Log.d("AvailableHours", "Available hours for $selectedDate: $availableHours")
                     updateHourList(availableHours)
                 } else {
-                    Toast.makeText(this@Schedule, "Failed to fetch available hours", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@ScheduleActivity, "Failed to fetch available hours", Toast.LENGTH_SHORT).show()
                     Log.e("AvailableHours", "Error fetching available hours: ${response.message()}")
                 }
             }
 
             override fun onFailure(call: Call<List<String>>, t: Throwable) {
-                Toast.makeText(this@Schedule, "Error: ${t.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@ScheduleActivity, "Error: ${t.message}", Toast.LENGTH_SHORT).show()
                 Log.e("AvailableHours", "Error: ${t.message}", t)
             }
         })
@@ -95,7 +119,7 @@ class Schedule : AppCompatActivity() {
             hourView.setOnClickListener {
                 val selectedDateFormatted = getFormattedDate(selectedDate)
 
-                val intent = Intent(this@Schedule, NextActivity::class.java).apply {
+                val intent = Intent(this@ScheduleActivity, SymptomsActivity::class.java).apply {
                     putExtra("selectedDate", selectedDateFormatted)
                     putExtra("selectedHour", hour)
                 }
@@ -131,9 +155,9 @@ class Schedule : AppCompatActivity() {
 
     private fun updateWeekDays() {
         weekCalendar.removeAllViews()
-        val daysOfWeek = listOf("Lun.", "Mar.", "Mie.", "Joi.", "Vin.", "Sâm.", "Dum.")
+        val daysOfWeek = listOf("Lun.", "Mar.", "Mie.", "Joi.", "Vin.",)
 
-        for (i in 0..6) {
+        for (i in 0..4) {
             val day = weekStart.clone() as Calendar
             day.add(Calendar.DAY_OF_MONTH, i)
 
@@ -145,13 +169,12 @@ class Schedule : AppCompatActivity() {
                 setPadding(16, 8, 16, 8)
                 layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
 
-                setTextColor(ContextCompat.getColor(this@Schedule, android.R.color.black))
-
+                setTextColor(ContextCompat.getColor(this@ScheduleActivity, android.R.color.black))
                 if (isPastDay) {
-                    setTextColor(ContextCompat.getColor(this@Schedule, android.R.color.darker_gray))
+                    setTextColor(ContextCompat.getColor(this@ScheduleActivity, android.R.color.darker_gray))
                     isClickable = false
                 } else {
-                    setTextColor(ContextCompat.getColor(this@Schedule, android.R.color.black))
+                    setTextColor(ContextCompat.getColor(this@ScheduleActivity, android.R.color.black))
                     isClickable = true
                 }
 
@@ -171,9 +194,26 @@ class Schedule : AppCompatActivity() {
 
     private fun selectCurrentDayAndFetchAppointments() {
         val currentDay = Calendar.getInstance()
+
+        if (currentDay.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY ||
+            currentDay.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY) {
+            currentDay.add(Calendar.DAY_OF_MONTH, if (currentDay.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY) 2 else 1)
+            weekStart = currentDay.clone() as Calendar
+            weekStart.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY)
+            updateWeekDisplay()
+
+            selectedDate = currentDay
+            updateAvailableHoursText(selectedDate)
+            fetchAppointmentsForSelectedDate(getFormattedDate(currentDay))
+
+            val mondayView = weekCalendar.getChildAt(0)
+            mondayView?.setBackgroundResource(R.drawable.day_selector)
+            return
+        }
+
         val today = getFormattedDate(currentDay)
 
-        for (i in 0..6) {
+        for (i in 0..4) {
             val day = weekStart.clone() as Calendar
             day.add(Calendar.DAY_OF_MONTH, i)
 
@@ -189,6 +229,7 @@ class Schedule : AppCompatActivity() {
             }
         }
     }
+
 
     private fun isSameDay(day1: Calendar, day2: Calendar): Boolean {
         return day1.get(Calendar.YEAR) == day2.get(Calendar.YEAR) &&
