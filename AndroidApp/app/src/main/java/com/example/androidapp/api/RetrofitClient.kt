@@ -4,13 +4,20 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitClient {
-    private const val BASE_URL = "http://192.168.1.55:8080/"
+    private const val BASE_URL = "http://89.33.44.130:9090/"
 
     val appointmentService: AppointmentService by lazy {
-        Retrofit.Builder()
-            .baseUrl(BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-            .create(AppointmentService::class.java)
+        Retrofit.Builder().baseUrl(BASE_URL).addConverterFactory(GsonConverterFactory.create())
+            .build().create(AppointmentService::class.java)
+    }
+
+    val insuranceService: InsuranceService by lazy {
+        Retrofit.Builder().baseUrl(BASE_URL).addConverterFactory(GsonConverterFactory.create())
+            .build().create(InsuranceService::class.java)
+    }
+
+    val userService: UserService by lazy {
+        Retrofit.Builder().baseUrl(BASE_URL).addConverterFactory(GsonConverterFactory.create())
+            .build().create(UserService::class.java)
     }
 }
