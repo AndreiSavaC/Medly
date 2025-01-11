@@ -45,6 +45,18 @@ services:
     networks:
       - pdm-network
 
+  ktor-api:
+    build:
+      context: ../KtorAPI
+      dockerfile: docker/Dockerfile
+    container_name: ktor-api-pdm
+    ports:
+      - "9090:9090"
+    networks:
+      - pdm-network
+    depends_on:
+      - postgres
+
 volumes:
   postgres_data:
 
