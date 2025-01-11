@@ -13,7 +13,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import com.auth0.android.jwt.JWT
 import com.example.androidapp.api.RetrofitClient
-import com.example.androidapp.api.UserResponse
+import com.example.androidapp.models.UserResponse
 import okhttp3.*
 import org.json.JSONObject
 import java.io.IOException
