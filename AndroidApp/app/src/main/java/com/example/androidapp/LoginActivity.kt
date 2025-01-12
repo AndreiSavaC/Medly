@@ -148,11 +148,15 @@ class LoginActivity : AppCompatActivity() {
 
                                     if (userResponse != null) {
                                         val isDoctor = userResponse.isDoctor
+                                        val patientId = userResponse.id
 
                                         val sharedPrefs = getSharedPreferences("authPrefs", MODE_PRIVATE)
                                         sharedPrefs.edit().apply {
                                             putString("ACCESS_TOKEN", accessToken)
                                             putString("REFRESH_TOKEN", refreshToken)
+                                            if (patientId != null) {
+                                                putInt("PATIENT_ID", patientId)
+                                            }
                                             putBoolean("IS_DOCTOR", isDoctor)
                                             apply()
                                         }
