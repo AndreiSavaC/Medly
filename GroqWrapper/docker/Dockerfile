@@ -4,6 +4,8 @@ FROM python:3.9-slim
 # Set environment variables
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
+ENV FLASK_APP=main.py
+ENV FLASK_RUN_HOST=0.0.0.0
 
 # Set the working directory
 WORKDIR /app
@@ -21,4 +23,4 @@ COPY . /app/
 EXPOSE 5000
 
 # Run the Flask app
-CMD ["flask", "run", "--host=0.0.0.0", "--port=5000"]
+CMD ["flask", "run"]
