@@ -19,8 +19,11 @@ fun Routing.appointmentRoutes(
     route("/appointments") {
         get {
             val appointments = appointmentService.getAppointments()
-            if (appointments.isNotEmpty()) call.respond(HttpStatusCode.OK, appointments)
-            call.respond(HttpStatusCode.NotFound, "Appointments not found")
+            if (appointments.isNotEmpty()) {
+                call.respond(HttpStatusCode.OK, appointments)
+            } else {
+                call.respond(HttpStatusCode.NotFound, "Appointments not found")
+            }
         }
 
         get("/{id}") {
@@ -30,8 +33,11 @@ fun Routing.appointmentRoutes(
                 return@get
             }
             val appointment = appointmentService.getAppointmentById(id)
-            if (appointment != null) call.respond(HttpStatusCode.OK, appointment)
-            call.respond(HttpStatusCode.NotFound, "Appointment not found")
+            if (appointment != null) {
+                call.respond(HttpStatusCode.OK, appointment)
+            } else {
+                call.respond(HttpStatusCode.NotFound, "Appointment not found")
+            }
         }
 
         get("/patient/{id}") {
@@ -40,9 +46,12 @@ fun Routing.appointmentRoutes(
                 call.respond(HttpStatusCode.BadRequest)
                 return@get
             }
-            val appointment = appointmentService.getAppointmentsByPatientId(id)
-            if (appointment.isNotEmpty()) call.respond(HttpStatusCode.OK, appointment)
-            call.respond(HttpStatusCode.NotFound, "Appointment not found")
+            val appointments = appointmentService.getAppointmentsByPatientId(id)
+            if (appointments.isNotEmpty()) {
+                call.respond(HttpStatusCode.OK, appointments)
+            } else {
+                call.respond(HttpStatusCode.NotFound, "Appointments not found")
+            }
         }
 
         get("/doctor/{id}") {
@@ -54,12 +63,18 @@ fun Routing.appointmentRoutes(
             }
             if (date.isNullOrBlank()) {
                 val appointments = appointmentService.getAppointmentsByDoctorId(id)
-                if (appointments.isNotEmpty()) call.respond(HttpStatusCode.OK, appointments)
-                call.respond(HttpStatusCode.NotFound, "Appointments not found")
+                if (appointments.isNotEmpty()) {
+                    call.respond(HttpStatusCode.OK, appointments)
+                } else {
+                    call.respond(HttpStatusCode.NotFound, "Appointments not found")
+                }
             } else {
                 val appointments = appointmentService.getAppointmentsByDoctorIdAndDate(id, date)
-                if (appointments.isNotEmpty()) call.respond(HttpStatusCode.OK, appointments)
-                call.respond(HttpStatusCode.NotFound, "Appointments not found")
+                if (appointments.isNotEmpty()) {
+                    call.respond(HttpStatusCode.OK, appointments)
+                } else {
+                    call.respond(HttpStatusCode.NotFound, "Appointments not found")
+                }
             }
         }
 
@@ -85,7 +100,7 @@ fun Routing.appointmentRoutes(
                 allSlots.add(currentTime)
                 currentTime = currentTime.plusMinutes(30)
             }
-            val availableSlots = allSlots.subtract(existingAppointments).toList()
+            val availableSlots = allSlots.subtract(existingAppointments.toSet()).toList()
             call.respond(HttpStatusCode.OK, availableSlots.map { it.format(DateTimeFormatter.ofPattern("HH:mm")) })
         }
 
@@ -142,9 +157,11 @@ fun Routing.appointmentRoutes(
             }
             val updatedAppointment = call.receive<Appointment>()
             val wasUpdated = appointmentService.updateAppointment(id, updatedAppointment)
-            if (wasUpdated) call.respond(HttpStatusCode.OK, "Appointment record updated successfully")
-            call.respond(HttpStatusCode.NotFound, "No appointment found with ID $id")
-
+            if (wasUpdated) {
+                call.respond(HttpStatusCode.OK, "Appointment record updated successfully")
+            } else {
+                call.respond(HttpStatusCode.NotFound, "No appointment found with ID $id")
+            }
         }
 
         delete("/{id}") {
@@ -154,8 +171,11 @@ fun Routing.appointmentRoutes(
                 return@delete
             }
             val wasDeleted = appointmentService.deleteAppointment(id)
-            if (wasDeleted) call.respond(HttpStatusCode.OK, "Appointment record deleted successfully")
-            call.respond(HttpStatusCode.NotFound, "No appointment found with ID $id")
+            if (wasDeleted) {
+                call.respond(HttpStatusCode.OK, "Appointment record deleted successfully")
+            } else {
+                call.respond(HttpStatusCode.NotFound, "No appointment found with ID $id")
+            }
         }
     }
 }
@@ -172,7 +192,7 @@ fun isDateTimeValid(date: String, time: String): Boolean {
         if (parsedDate.isBefore(currentDate)) {
             return false
         }
-        if (parsedDate.hour < 9 || parsedDate.hour > 21) {
+        if (parsedDate.hour < 8 || parsedDate.hour >= 14) {
             return false
         }
     } catch (e: Exception) {
