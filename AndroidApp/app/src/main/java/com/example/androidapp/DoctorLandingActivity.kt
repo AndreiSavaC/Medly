@@ -38,7 +38,15 @@ class DoctorLandingActivity : AppCompatActivity() {
         }
 
         val recyclerViewAppointments: RecyclerView = findViewById(R.id.recyclerViewAppointments)
-        appointmentAdapter = AppointmentAdapter(appointmentsList)
+        appointmentAdapter = AppointmentAdapter(appointmentsList) { appointment ->
+            val intent = Intent(this, AppointmentDetailsActivity::class.java).apply {
+                putExtra("patientName", appointment.patientName)
+                putExtra("date", appointment.date)
+                putExtra("time", appointment.time)
+                putExtra("symptoms", appointment.symptoms)
+            }
+            startActivity(intent)
+        }s
         recyclerViewAppointments.layoutManager = LinearLayoutManager(this)
         recyclerViewAppointments.adapter = appointmentAdapter
 
@@ -67,10 +75,10 @@ class DoctorLandingActivity : AppCompatActivity() {
         appointmentsList.clear()
 
         if (date == "4-1-2025") {
-            appointmentsList.add(Appointment("John Doe", "10:00 AM", "Flu"))
-            appointmentsList.add(Appointment("Jane Smith", "12:00 PM", "Cough"))
+            appointmentsList.add(Appointment("John Doe", "10:00 AM", "4-1-2025","awdwa"))
+            appointmentsList.add(Appointment("Jane Smith", "12:00 PM","4-1-2025","awdwa" ))
         } else {
-            appointmentsList.add(Appointment("Alex Brown", "2:00 PM", "Headache"))
+            appointmentsList.add(Appointment("Alex Brown", "2:00 PM","4-1-2025","awdwa" ))
         }
 
         appointmentAdapter.notifyDataSetChanged()
@@ -79,6 +87,7 @@ class DoctorLandingActivity : AppCompatActivity() {
             Toast.makeText(this, "No appointments for $date", Toast.LENGTH_SHORT).show()
         }
     }
+
     private fun performLogout(refreshToken: String?) {
         if (refreshToken.isNullOrEmpty()) {
             val sharedPrefs = getSharedPreferences("authPrefs", MODE_PRIVATE)

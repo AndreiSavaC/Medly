@@ -22,6 +22,12 @@ interface AppointmentService {
         @Path("patientId") patientId: Int
     ): Call<List<AppointmentResponse>>
 
+    @GET("appointments/doctor/{doctorId}")
+    fun getAppointmentsByDoctorId(
+        @Path("doctorId") doctorId: Int,
+        @Query("date") date: String
+    ): Call<List<AppointmentResponse>>
+
     @POST("appointments")
     fun createAppointment(@Body appointment: AppointmentRequest): Call<ResponseBody>
 }

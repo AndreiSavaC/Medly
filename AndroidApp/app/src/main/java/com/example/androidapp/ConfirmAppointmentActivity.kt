@@ -140,13 +140,10 @@ class ConfirmAppointmentActivity : AppCompatActivity() {
 
                         val intent = Intent(this@ConfirmAppointmentActivity, PatientLandingActivity::class.java)
 
-                        // (Opțional) Poți adăuga flag-uri pentru a curăța stiva de activități
                         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
 
-                        // Pornește activitatea
                         startActivity(intent)
 
-                        // Închide activitatea curentă
                         finish()
                     } else {
                         Toast.makeText(

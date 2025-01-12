@@ -6,38 +6,41 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
-class AppointmentAdapter(private val appointments: List<Appointment>) :
-    RecyclerView.Adapter<AppointmentAdapter.AppointmentViewHolder>() {
+class AppointmentAdapter(
+    private val appointments: List<Appointment>,
+    private val onItemClick: (Appointment) -> Unit
+) : RecyclerView.Adapter<AppointmentAdapter.ViewHolder>() {
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AppointmentViewHolder {
-        val itemView = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_appointment, parent, false)
-        return AppointmentViewHolder(itemView)
-    }
-
-    override fun onBindViewHolder(holder: AppointmentViewHolder, position: Int) {
-        val appointment = appointments[position]
-        holder.bind(appointment)
-    }
-
-    override fun getItemCount(): Int = appointments.size
-
-    class AppointmentViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-
-        private val patientNameTextView: TextView = itemView.findViewById(R.id.textViewPatientName)
-        private val timeTextView: TextView = itemView.findViewById(R.id.textViewTime)
-        private val symptomsTextView: TextView = itemView.findViewById(R.id.textViewSymptoms)
+    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val textViewPatientName: TextView = itemView.findViewById(R.id.textViewPatientName)
+        val textViewDate: TextView = itemView.findViewById(R.id.textViewDate)
+        val textViewTime: TextView = itemView.findViewById(R.id.textViewTime)
 
         fun bind(appointment: Appointment) {
-            patientNameTextView.text = appointment.patientName
-            timeTextView.text = appointment.time
-            symptomsTextView.text = appointment.symptoms
+            textViewPatientName.text = appointment.patientName
+            textViewDate.text = appointment.date
+            textViewTime.text = appointment.time
+            itemView.setOnClickListener { onItemClick(appointment) }
         }
     }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        val view = LayoutInflater.from(parent.context)
+            .inflate(R.layout.item_appointment, parent, false)
+        return ViewHolder(view)
+    }
+
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        holder.bind(appointments[position])
+    }
+
+    override fun getItemCount() = appointments.size
 }
+
 
 data class Appointment(
     val patientName: String,
+    val date: String,
     val time: String,
     val symptoms: String
 )
