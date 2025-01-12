@@ -150,6 +150,8 @@ class LoginActivity : AppCompatActivity() {
                                         val isDoctor = userResponse.isDoctor
                                         val patientId = userResponse.id
                                         val doctorId = userResponse.doctorId
+                                        val lastName =  userResponse.lastName
+                                        val firstName = userResponse.firstName
 
                                         val sharedPrefs = getSharedPreferences("authPrefs", MODE_PRIVATE)
                                         sharedPrefs.edit().apply {
@@ -161,6 +163,8 @@ class LoginActivity : AppCompatActivity() {
                                             if (doctorId != null) {
                                                 putInt("DOCTOR_ID", doctorId)
                                             }
+                                            putString("LAST_NAME", lastName)
+                                            putString("FIRST_NAME", firstName)
                                             putBoolean("IS_DOCTOR", isDoctor)
                                             apply()
                                         }
