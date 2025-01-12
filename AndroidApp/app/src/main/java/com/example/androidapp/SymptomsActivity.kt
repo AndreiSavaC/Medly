@@ -100,11 +100,14 @@ class SymptomsActivity : AppCompatActivity() {
 
             val categoryTitle = categoryView.findViewById<TextView>(R.id.categoryTitle)
             categoryTitle.text = category.name
+            categoryTitle.setTextColor(getResources().getColor(R. color. black))
+            categoryTitle.textSize = 24.0f
 
             val symptomLayout = categoryView.findViewById<LinearLayout>(R.id.symptomLayout)
             symptoms.filter { it.categoryId == category.id }.forEach { symptom ->
                 val symptomCheckBox = CheckBox(this)
                 symptomCheckBox.text = symptom.name
+                symptomCheckBox.textSize = 15.0f
                 symptomCheckBox.buttonTintList = colorStateList
                 symptomCheckBox.setOnCheckedChangeListener { _, isChecked ->
                     symptom.isSelected = isChecked

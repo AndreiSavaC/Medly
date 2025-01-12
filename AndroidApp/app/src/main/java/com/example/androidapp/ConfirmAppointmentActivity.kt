@@ -55,7 +55,7 @@ class ConfirmAppointmentActivity : AppCompatActivity() {
         val symptomsCategoryContainer = findViewById<LinearLayout>(R.id.containerSymptomsCategory)
         val scheduleButton = findViewById<Button>(R.id.btnSchedule)
 
-        val doctorName = "Dr. Popescu Ion"
+        val doctorName = "Dr. Cacanaru Ion"
         dateTextView.text = "Zi selectată: $selectedDate"
         hourTextView.text = "Ora selectată: $selectedHour"
         doctorTextView.text = "Doctor: $doctorName"
@@ -81,16 +81,17 @@ class ConfirmAppointmentActivity : AppCompatActivity() {
             for ((category, symptoms) in symptomsByCategory) {
                 val categoryTextView = TextView(this).apply {
                     text = category
-                    textSize = 18f
+                    textSize = 20f
                     setTypeface(null, android.graphics.Typeface.BOLD)
                     setPadding(0, 8, 0, 8)
                 }
+                categoryTextView.setTextColor(resources.getColor(R.color.black))
                 symptomsCategoryContainer.addView(categoryTextView)
 
                 symptoms.forEach { symptom ->
                     val symptomTextView = TextView(this).apply {
                         text = "- $symptom"
-                        textSize = 16f
+                        textSize = 18f
                         setPadding(16, 4, 0, 4)
                     }
                     symptomsCategoryContainer.addView(symptomTextView)

@@ -1,8 +1,8 @@
 <resources>
 
-    <string name="app_name">Doctor Sanus</string>
-    <string name="prev_week_btn">&lt;Anterior</string>
-    <string name="next_week_btn">Următor></string>
+    <string name="app_name">Medly</string>
+    <string name="prev_week_btn">&lt; Anterior</string>
+    <string name="next_week_btn">Următor ></string>
     <string name="schedule_text">Ore disponibile pe </string>
     <string name="invalid_credentials">Email-ul sau parola sunt gresite!</string>
     <string name="no_credentials">Email-ul sau parola nu au fost introduse!</string>

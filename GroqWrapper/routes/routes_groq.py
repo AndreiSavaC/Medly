@@ -6,7 +6,7 @@ client = Groq()
 groq_bp = Blueprint("groq", __name__)
 
 
-@groq_bp.route("/reports/doctor", methods=["GET"])
+@groq_bp.route("/reports/doctor", methods=["POST"])
 def generate_doctor_report():
     data = request.get_json()
     symptoms = data.get("symptoms", [])
@@ -55,7 +55,7 @@ def generate_doctor_report():
         )
 
 
-@groq_bp.route("/reports/patient", methods=["GET"])
+@groq_bp.route("/reports/patient", methods=["POST"])
 def generate_patient_report():
     data = request.get_json()
     symptoms = data.get("symptoms", [])

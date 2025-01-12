@@ -9,10 +9,12 @@
         android:id="@+id/categoryTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:fontFamily="@font/montserrat_bold"
+        android:paddingBottom="8dp"
         android:text="Titlu categorie"
+        android:textColor="@color/black"
         android:textSize="18sp"
-        android:textStyle="bold"
-        android:paddingBottom="8dp" />
+        android:textStyle="bold" />
 
     <LinearLayout
         android:id="@+id/symptomLayout"

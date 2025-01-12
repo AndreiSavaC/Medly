@@ -155,7 +155,7 @@ class ScheduleActivity : AppCompatActivity() {
 
     private fun updateWeekDays() {
         weekCalendar.removeAllViews()
-        val daysOfWeek = listOf("Lun.", "Mar.", "Mie.", "Joi.", "Vin.",)
+        val daysOfWeek = listOf("Lun", "Mar", "Mie", "Joi", "Vin",)
 
         for (i in 0..4) {
             val day = weekStart.clone() as Calendar
@@ -245,7 +245,7 @@ class ScheduleActivity : AppCompatActivity() {
 
     private fun updateAvailableHoursText(selectedDate: Calendar) {
         val formattedDate = getFormattedDateForText(selectedDate)
-        val fullText = " $formattedDate."
+        val fullText = " $formattedDate"
 
         findViewById<TextView>(R.id.txtAvailableHours).text = fullText
     }
