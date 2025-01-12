@@ -11,7 +11,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.androidapp.api.RetrofitClient
-import com.example.androidapp.models.Appointment
+import com.example.androidapp.models.AppointmentResponse
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -19,13 +19,17 @@ import java.io.IOException
 
 class PatientLandingActivity : AppCompatActivity() {
 
+    private var patientId: Int = -1
+    private var refreshToken: String? = null
+    private lateinit var appointmentList: LinearLayout
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_patient_landing)
 
         val sharedPreferences = getSharedPreferences("authPrefs", MODE_PRIVATE)
-        val refreshToken = sharedPreferences.getString("REFRESH_TOKEN", null)
-        val patientId = sharedPreferences.getInt("PATIENT_ID", -1)
+        refreshToken = sharedPreferences.getString("REFRESH_TOKEN", null)
+        patientId = sharedPreferences.getInt("PATIENT_ID", -1)
 
         if (patientId == -1) {
             Toast.makeText(this, "Patient ID not found.", Toast.LENGTH_LONG).show()
@@ -50,10 +54,24 @@ class PatientLandingActivity : AppCompatActivity() {
             startActivity(Intent(this, MainMenuActivity::class.java))
         }
 
-        val appointmentList = findViewById<LinearLayout>(R.id.appointment_list)
+        appointmentList = findViewById(R.id.appointment_list)
+    }
 
-        RetrofitClient.appointmentService.getAppointmentsByPatientId(patientId).enqueue(object : Callback<List<Appointment>> {
-            override fun onResponse(call: Call<List<Appointment>>, response: Response<List<Appointment>>) {
+    override fun onResume() {
+        super.onResume()
+        fetchAppointments()
+    }
+
+    private fun fetchAppointments() {
+        if (patientId == -1) {
+            Toast.makeText(this, "Patient ID invalid.", Toast.LENGTH_LONG).show()
+            return
+        }
+
+        appointmentList.removeAllViews()
+
+        RetrofitClient.appointmentService.getAppointmentsByPatientId(patientId).enqueue(object : Callback<List<AppointmentResponse>> {
+            override fun onResponse(call: Call<List<AppointmentResponse>>, response: Response<List<AppointmentResponse>>) {
                 if (response.isSuccessful) {
                     val appointments = response.body() ?: emptyList()
                     runOnUiThread {
@@ -100,7 +118,7 @@ class PatientLandingActivity : AppCompatActivity() {
                 }
             }
 
-            override fun onFailure(call: Call<List<Appointment>>, t: Throwable) {
+            override fun onFailure(call: Call<List<AppointmentResponse>>, t: Throwable) {
                 runOnUiThread {
                     Toast.makeText(this@PatientLandingActivity, "Eroare de rețea: ${t.message}", Toast.LENGTH_LONG).show()
                     Log.e("Appointments", "Failure: ${t.message}", t)

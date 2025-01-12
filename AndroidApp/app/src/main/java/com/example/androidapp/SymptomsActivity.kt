@@ -118,6 +118,7 @@ class SymptomsActivity : AppCompatActivity() {
 
         confirmButton.setOnClickListener {
 
+            val selectedSymptoms = symptoms.filter { it.isSelected }.map { it.name }
             val selectedSymptomsByCategory = categories.associate { category ->
 
                 val selectedSymptomsInCategory = symptoms.filter { it.isSelected && it.categoryId == category.id }
@@ -136,7 +137,7 @@ class SymptomsActivity : AppCompatActivity() {
 
             intent.putExtra("selectedDate", selectedDate)
             intent.putExtra("selectedHour", selectedHour)
-
+            intent.putStringArrayListExtra("selectedSymptoms", ArrayList(selectedSymptoms))
             intent.putStringArrayListExtra("categorySymptoms", categorySymptomsList)
 
             startActivity(intent)
