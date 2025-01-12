@@ -1,5 +1,6 @@
 package com.example.androidapp.api
 
+import com.example.androidapp.models.Appointment
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.http.Body
@@ -14,6 +15,11 @@ interface AppointmentService {
         @Path("doctorId") doctorId: Int,
         @Query("date") date: String
     ): Call<List<String>>
+
+    @GET("appointments/patient/{patientId}")
+    fun getAppointmentsByPatientId(
+        @Path("patientId") patientId: Int
+    ): Call<List<Appointment>>
 
     @POST("appointments")
     fun createAppointment(@Body body: Map<String, Any>): Call<ResponseBody>

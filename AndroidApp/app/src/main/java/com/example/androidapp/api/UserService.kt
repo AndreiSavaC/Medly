@@ -12,11 +12,11 @@ import retrofit2.http.Path
 
 interface UserService {
     @POST("/users")
-    @Headers("Content-Type: application/json")  // You may need to adjust headers as per your API requirements
+    @Headers("Content-Type: application/json")
     fun createUser(
         @Body user: UserRequest,
         @Header("X-User-Password") password: String
-    ): Call<UserResponse>  // Replace UserResponse with your response type
+    ): Call<UserResponse>
 
     @GET("users/keycloak/{id}")
     fun getUserByKeycloakId(@Path("id") id: String): Call<UserResponse>

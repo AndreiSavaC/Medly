@@ -12,8 +12,20 @@
         android:layout_height="?attr/actionBarSize"
         android:background="@color/secondaryColor"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-        app:title="Programari viitoare"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:title="Pagina principala"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageButton
+            android:id="@+id/btnLogout"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_gravity="end"
+            android:src="@drawable/logout"
+            android:background="?attr/selectableItemBackground"
+            android:contentDescription="Logout"
+            android:padding="4dp"
+            android:scaleType="centerInside" />
+    </androidx.appcompat.widget.Toolbar>
 
     <android.widget.DatePicker
         android:id="@+id/datePicker"

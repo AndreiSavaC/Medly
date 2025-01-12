@@ -31,7 +31,7 @@
         </activity>
 
         <activity
-            android:name=".LandingActivity"
+            android:name=".PatientLandingActivity"
             android:screenOrientation="portrait"
             android:exported="false">
             <meta-data
