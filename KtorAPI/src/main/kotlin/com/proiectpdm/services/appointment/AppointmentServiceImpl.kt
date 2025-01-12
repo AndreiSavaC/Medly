@@ -7,6 +7,8 @@ import kotlinx.serialization.json.Json
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 class AppointmentServiceImpl : AppointmentService {
     override suspend fun getAppointments(): List<Appointment> = transaction {
@@ -28,8 +30,14 @@ class AppointmentServiceImpl : AppointmentService {
     }
 
     override suspend fun getAppointmentsByPatientId(patientId: Int): List<Appointment> = transaction {
-        AppointmentsTable.selectAll().where { AppointmentsTable.patientId eq patientId }
+        val currentDateTime = LocalDateTime.now()
+        AppointmentsTable.selectAll()
+            .where { (AppointmentsTable.patientId eq patientId) and (AppointmentsTable.date greaterEq currentDateTime.toLocalDate().toString()) }
             .map { resultRowToAppointment(it) }
+            .filter {
+                val appointmentDateTime = LocalDateTime.parse("${it.date} ${it.time}", DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm"))
+                appointmentDateTime.isAfter(currentDateTime)
+            }
     }
 
     override suspend fun getAppointmentsByDoctorIdAndDate(doctorId: Int, date: String): List<Appointment> =
