@@ -55,7 +55,7 @@ class ConfirmAppointmentActivity : AppCompatActivity() {
         val symptomsCategoryContainer = findViewById<LinearLayout>(R.id.containerSymptomsCategory)
         val scheduleButton = findViewById<Button>(R.id.btnSchedule)
 
-        val doctorName = "Dr. Cacanaru Ion"
+        val doctorName = "Dr. Popescu Ion"
         dateTextView.text = "Zi selectată: $selectedDate"
         hourTextView.text = "Ora selectată: $selectedHour"
         doctorTextView.text = "Doctor: $doctorName"
