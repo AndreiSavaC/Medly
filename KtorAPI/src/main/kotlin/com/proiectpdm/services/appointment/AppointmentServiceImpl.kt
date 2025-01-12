@@ -31,14 +31,17 @@ class AppointmentServiceImpl : AppointmentService {
 
     override suspend fun getAppointmentsByPatientId(patientId: Int): List<Appointment> = transaction {
         val currentDateTime = LocalDateTime.now()
-        AppointmentsTable.selectAll()
-            .where { (AppointmentsTable.patientId eq patientId) and (AppointmentsTable.date greaterEq currentDateTime.toLocalDate().toString()) }
-            .map { resultRowToAppointment(it) }
-            .filter {
-                val appointmentDateTime = LocalDateTime.parse("${it.date} ${it.time}", DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm"))
-                appointmentDateTime.isAfter(currentDateTime)
-            }
+
+        AppointmentsTable.selectAll().where {
+            (AppointmentsTable.patientId eq patientId)
+        }.map { resultRowToAppointment(it) }.filter {
+            val appointmentDateTime = LocalDateTime.parse(
+                "${it.date} ${it.time}", DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm")
+            )
+            appointmentDateTime.isAfter(currentDateTime)
+        }
     }
+
 
     override suspend fun getAppointmentsByDoctorIdAndDate(doctorId: Int, date: String): List<Appointment> =
         transaction {
