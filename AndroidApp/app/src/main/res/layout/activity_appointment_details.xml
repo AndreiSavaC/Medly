@@ -1,39 +1,123 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:padding="16dp">
 
-    <TextView
-        android:id="@+id/textViewPatientName"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Patient Name"
-        android:textStyle="bold"
-        android:textSize="18sp"
-        android:paddingBottom="8dp" />
+        android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/textViewDate"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Date"
-        android:textSize="16sp"
-        android:paddingBottom="8dp" />
+        <!-- Nume pacient -->
+        <TextView
+            android:id="@+id/textViewPatientName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Patient Name"
+            android:textStyle="bold"
+            android:textSize="20sp"
+            android:paddingBottom="8dp" />
 
-    <TextView
-        android:id="@+id/textViewTime"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Time"
-        android:textSize="16sp"
-        android:paddingBottom="8dp" />
+        <!-- Data -->
+        <TextView
+            android:id="@+id/textViewDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Date"
+            android:textSize="16sp"
+            android:paddingBottom="4dp" />
 
-    <TextView
-        android:id="@+id/textViewSymptoms"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Symptoms"
-        android:textSize="16sp" />
-</LinearLayout>
+        <!-- Ora -->
+        <TextView
+            android:id="@+id/textViewTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Time"
+            android:textSize="16sp"
+            android:paddingBottom="4dp" />
+
+        <!-- Simptome -->
+        <TextView
+            android:id="@+id/textViewSymptomsLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Simptome:"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:paddingTop="8dp"
+            android:paddingBottom="4dp" />
+
+        <TextView
+            android:id="@+id/textViewSymptoms"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Simptome"
+            android:textSize="16sp"
+            android:paddingBottom="8dp"
+            android:padding="8dp"
+            android:lineSpacingExtra="4dp" />
+
+        <!-- Email -->
+        <TextView
+            android:id="@+id/textViewEmail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Email"
+            android:textSize="16sp"
+            android:paddingBottom="4dp" />
+
+        <!-- Gen -->
+        <TextView
+            android:id="@+id/textViewGender"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Gen"
+            android:textSize="16sp"
+            android:paddingBottom="4dp" />
+
+        <!-- Înălțime -->
+        <TextView
+            android:id="@+id/textViewHeight"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Înălțime"
+            android:textSize="16sp"
+            android:paddingBottom="4dp" />
+
+        <!-- Greutate -->
+        <TextView
+            android:id="@+id/textViewWeight"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Greutate"
+            android:textSize="16sp"
+            android:paddingBottom="4dp" />
+
+        <!-- Data nașterii -->
+        <TextView
+            android:id="@+id/textViewBirthday"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Data nașterii"
+            android:textSize="16sp"
+            android:paddingBottom="4dp" />
+
+        <!-- Buton pentru generarea raportului -->
+        <Button
+            android:id="@+id/buttonGenerateReport"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Generează Raport"
+            android:layout_marginTop="16dp" />
+
+        <!-- TextView pentru afișarea raportului -->
+        <TextView
+            android:id="@+id/textViewReport"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Raportul va apărea aici"
+            android:textSize="16sp"
+            android:paddingTop="16dp" />
+    </LinearLayout>
+</ScrollView>

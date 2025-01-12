@@ -1,3 +1,4 @@
+// File: com/example/androidapp/api/UserService.kt
 package com.example.androidapp.api
 
 import com.example.androidapp.models.UserRequest
@@ -20,4 +21,7 @@ interface UserService {
 
     @GET("users/keycloak/{id}")
     fun getUserByKeycloakId(@Path("id") id: String): Call<UserResponse>
+
+    @GET("users/{id}")
+    fun getUserById(@Path("id") id: Int): Call<UserResponse>
 }

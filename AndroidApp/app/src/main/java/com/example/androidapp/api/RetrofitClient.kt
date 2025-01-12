@@ -5,6 +5,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitClient {
     private const val BASE_URL = "http://89.33.44.130:9090/"
+    private const val FLASK_URL = "http://89.33.44.130:5000/"
 
     val appointmentService: AppointmentService by lazy {
         Retrofit.Builder().baseUrl(BASE_URL).addConverterFactory(GsonConverterFactory.create())
@@ -29,5 +30,11 @@ object RetrofitClient {
             .create(SymptomService::class.java)
     }
 
-
+    val reportService: ReportService by lazy {
+        Retrofit.Builder()
+            .baseUrl(FLASK_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(ReportService::class.java)
+    }
 }

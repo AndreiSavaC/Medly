@@ -35,8 +35,5 @@ class MainMenuActivity : AppCompatActivity() {
         WindowInsetsControllerCompat(window, findViewById(R.id.main)).isAppearanceLightStatusBars =
             true
 
-
-        val userNameTextView = findViewById<TextView>(R.id.userNameTextView)
-
     }
 }

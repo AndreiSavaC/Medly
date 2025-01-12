@@ -58,6 +58,24 @@
         </activity>
 
         <activity
+            android:name=".AppointmentDetailsActivity"
+            android:screenOrientation="portrait"
+            android:exported="false">
+            <meta-data
+                android:name="preloaded_fonts"
+                android:resource="@array/preloaded_fonts" />
+        </activity>
+
+        <activity
+            android:name=".ReportActivity"
+            android:screenOrientation="portrait"
+            android:exported="false">
+            <meta-data
+                android:name="preloaded_fonts"
+                android:resource="@array/preloaded_fonts" />
+        </activity>
+
+        <activity
             android:name=".ScheduleActivity"
             android:screenOrientation="portrait"
             android:exported="false">

@@ -1,3 +1,4 @@
+// File: com/example/androidapp/AppointmentAdapter.kt
 package com.example.androidapp
 
 import android.view.LayoutInflater
@@ -5,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.example.androidapp.models.Appointment
 
 class AppointmentAdapter(
     private val appointments: List<Appointment>,
@@ -15,11 +17,13 @@ class AppointmentAdapter(
         val textViewPatientName: TextView = itemView.findViewById(R.id.textViewPatientName)
         val textViewDate: TextView = itemView.findViewById(R.id.textViewDate)
         val textViewTime: TextView = itemView.findViewById(R.id.textViewTime)
+        // Eliminat TextView pentru simptome
 
         fun bind(appointment: Appointment) {
             textViewPatientName.text = appointment.patientName
             textViewDate.text = appointment.date
             textViewTime.text = appointment.time
+            // Eliminat legarea simptomelor
             itemView.setOnClickListener { onItemClick(appointment) }
         }
     }
@@ -36,11 +40,3 @@ class AppointmentAdapter(
 
     override fun getItemCount() = appointments.size
 }
-
-
-data class Appointment(
-    val patientName: String,
-    val date: String,
-    val time: String,
-    val symptoms: String
-)

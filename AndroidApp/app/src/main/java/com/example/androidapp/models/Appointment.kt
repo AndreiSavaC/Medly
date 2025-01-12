@@ -15,3 +15,14 @@ data class AppointmentRequest(
     val doctorId: Int,
     val symptoms: List<String>
 )
+data class Appointment(
+    val patientName: String,
+    val date: String,
+    val time: String,
+    val symptoms: String,
+    val email: String,
+    val gender: String,
+    val height: Float,
+    val weight: Float,
+    val birthday: String
+)
