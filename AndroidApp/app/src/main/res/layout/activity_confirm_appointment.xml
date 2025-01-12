@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -12,10 +11,10 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="@color/secondaryColor"
+        android:background="@color/mainRed"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-        app:title="Confirmare programare"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:title="Confirmare programare" />
 
     <!-- ScrollView care conține tot conținutul paginii (mai puțin butonul) -->
     <ScrollView
@@ -23,10 +22,10 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:fillViewport="true"
-        app:layout_constraintTop_toBottomOf="@id/toolbar"
         app:layout_constraintBottom_toTopOf="@+id/btnSchedule"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintTop_toBottomOf="@id/toolbar">
 
         <!-- Un LinearLayout vertical care grupează toate secțiunile -->
         <LinearLayout
@@ -41,14 +40,14 @@
                 android:id="@+id/containerDate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
                 android:gravity="center_vertical"
+                android:orientation="horizontal"
                 android:padding="8dp">
 
                 <ImageView
                     android:id="@+id/imgCalendar"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
                     android:layout_marginEnd="12dp"
                     android:src="@drawable/calendar" />
 
@@ -56,7 +55,9 @@
                     android:id="@+id/txtSelectedDate"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:fontFamily="@font/montserrat_bold"
                     android:text="Zi selectată: "
+                    android:textColor="@color/black"
                     android:textSize="18sp" />
             </LinearLayout>
 
@@ -71,14 +72,14 @@
                 android:id="@+id/containerHour"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
                 android:gravity="center_vertical"
+                android:orientation="horizontal"
                 android:padding="8dp">
 
                 <ImageView
                     android:id="@+id/imgClock"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
                     android:layout_marginEnd="12dp"
                     android:src="@drawable/clock" />
 
@@ -86,7 +87,9 @@
                     android:id="@+id/txtSelectedHour"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:fontFamily="@font/montserrat_bold"
                     android:text="Ora selectată: "
+                    android:textColor="@color/black"
                     android:textSize="18sp" />
             </LinearLayout>
 
@@ -101,14 +104,14 @@
                 android:id="@+id/containerDoctor"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
                 android:gravity="center_vertical"
+                android:orientation="horizontal"
                 android:padding="8dp">
 
                 <ImageView
                     android:id="@+id/imgDoctor"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
                     android:layout_marginEnd="12dp"
                     android:src="@drawable/doctor" />
 
@@ -116,7 +119,9 @@
                     android:id="@+id/txtDoctorName"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:fontFamily="@font/montserrat_bold"
                     android:text="Doctor: "
+                    android:textColor="@color/black"
                     android:textSize="18sp" />
             </LinearLayout>
 
@@ -131,14 +136,14 @@
                 android:id="@+id/containerSymptoms"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
                 android:gravity="center_vertical"
+                android:orientation="horizontal"
                 android:padding="8dp">
 
                 <ImageView
                     android:id="@+id/imgSymptoms"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
                     android:layout_marginEnd="12dp"
                     android:src="@drawable/symptoms" />
 
@@ -146,7 +151,9 @@
                     android:id="@+id/txtSymptoms"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:fontFamily="@font/montserrat_bold"
                     android:text="Simptome selectate:"
+                    android:textColor="@color/black"
                     android:textSize="18sp" />
             </LinearLayout>
 
@@ -163,16 +170,16 @@
 
     <Button
         android:id="@+id/btnSchedule"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_width="376dp"
+        android:layout_height="62dp"
         android:layout_margin="16dp"
         android:backgroundTint="@color/primaryColor"
-        android:text="Programează"
+        android:fontFamily="@font/montserrat_bold"
+        android:text="Confirmă"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

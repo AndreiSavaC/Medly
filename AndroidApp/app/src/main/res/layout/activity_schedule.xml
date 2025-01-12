@@ -11,10 +11,10 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="@color/secondaryColor"
+        android:background="@color/mainRed"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-        app:title="Alege data si ora"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:title="Alege data si ora" />
 
     <!-- Week Navigation Container -->
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -28,14 +28,15 @@
             android:id="@+id/btnPrevWeek"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/prev_week_btn"
-            android:textColor="@color/primaryColor"
             android:background="@android:color/transparent"
+            android:fontFamily="@font/montserrat_bold"
+            android:text="@string/prev_week_btn"
             android:textAllCaps="false"
+            android:textColor="@color/accentColor"
             android:textSize="16sp"
             android:textStyle="bold"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/txtWeekRange"
@@ -55,14 +56,15 @@
             android:id="@+id/btnNextWeek"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:fontFamily="@font/montserrat_bold"
             android:text="@string/next_week_btn"
+            android:textAllCaps="false"
+            android:textColor="@color/accentColor"
             android:textSize="16sp"
             android:textStyle="bold"
-            android:textColor="@color/primaryColor"
-            android:background="@android:color/transparent"
-            android:textAllCaps="false"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <LinearLayout
@@ -95,9 +97,10 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:fontFamily="@font/montserrat_bold"
             android:text="@string/schedule_text"
-            android:textSize="18sp"
             android:textColor="@color/black"
+            android:textSize="18sp"
             android:textStyle="bold" />
 
         <TextView

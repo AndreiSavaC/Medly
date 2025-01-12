@@ -46,7 +46,7 @@ class DoctorLandingActivity : AppCompatActivity() {
                 putExtra("symptoms", appointment.symptoms)
             }
             startActivity(intent)
-        }s
+        }
         recyclerViewAppointments.layoutManager = LinearLayoutManager(this)
         recyclerViewAppointments.adapter = appointmentAdapter
 

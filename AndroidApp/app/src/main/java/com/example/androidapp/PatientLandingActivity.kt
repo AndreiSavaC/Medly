@@ -23,6 +23,7 @@ class PatientLandingActivity : AppCompatActivity() {
     private var refreshToken: String? = null
     private lateinit var appointmentList: LinearLayout
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_patient_landing)
@@ -30,6 +31,8 @@ class PatientLandingActivity : AppCompatActivity() {
         val sharedPreferences = getSharedPreferences("authPrefs", MODE_PRIVATE)
         refreshToken = sharedPreferences.getString("REFRESH_TOKEN", null)
         patientId = sharedPreferences.getInt("PATIENT_ID", -1)
+        val userFirstName: String? = sharedPreferences.getString("FIRST_NAME", "")
+        val userLastName: String? = sharedPreferences.getString("LAST_NAME", "")
 
         if (patientId == -1) {
             Toast.makeText(this, "Patient ID not found.", Toast.LENGTH_LONG).show()
@@ -37,6 +40,9 @@ class PatientLandingActivity : AppCompatActivity() {
             finish()
             return
         }
+
+        val userNameTextView = findViewById<TextView>(R.id.userNameTextView2)
+        userNameTextView.text = userFirstName + " " + userLastName
 
         val btnLogout = findViewById<ImageButton>(R.id.btnLogout)
         btnLogout.setOnClickListener {
@@ -70,61 +76,80 @@ class PatientLandingActivity : AppCompatActivity() {
 
         appointmentList.removeAllViews()
 
-        RetrofitClient.appointmentService.getAppointmentsByPatientId(patientId).enqueue(object : Callback<List<AppointmentResponse>> {
-            override fun onResponse(call: Call<List<AppointmentResponse>>, response: Response<List<AppointmentResponse>>) {
-                if (response.isSuccessful) {
-                    val appointments = response.body() ?: emptyList()
-                    runOnUiThread {
-                        if (appointments.isEmpty()) {
-                            Toast.makeText(this@PatientLandingActivity, "Nu ai programări.", Toast.LENGTH_LONG).show()
-                        } else {
-                            for (appointment in appointments) {
-                                val appointmentContainer = LinearLayout(this@PatientLandingActivity).apply {
-                                    orientation = LinearLayout.VERTICAL
-                                    setPadding(16, 16, 16, 16)
-                                    setBackgroundColor(getColor(android.R.color.white))
-                                    layoutParams = LinearLayout.LayoutParams(
-                                        LinearLayout.LayoutParams.MATCH_PARENT,
-                                        LinearLayout.LayoutParams.WRAP_CONTENT
-                                    ).apply {
-                                        setMargins(0, 8, 0, 8)
+        RetrofitClient.appointmentService.getAppointmentsByPatientId(patientId)
+            .enqueue(object : Callback<List<AppointmentResponse>> {
+                override fun onResponse(
+                    call: Call<List<AppointmentResponse>>,
+                    response: Response<List<AppointmentResponse>>
+                ) {
+                    if (response.isSuccessful) {
+                        val appointments = response.body() ?: emptyList()
+                        runOnUiThread {
+                            if (appointments.isEmpty()) {
+                                Toast.makeText(
+                                    this@PatientLandingActivity,
+                                    "Nu ai programări.",
+                                    Toast.LENGTH_LONG
+                                ).show()
+                            } else {
+                                for (appointment in appointments) {
+                                    val appointmentContainer =
+                                        LinearLayout(this@PatientLandingActivity).apply {
+                                            orientation = LinearLayout.VERTICAL
+                                            setPadding(16, 16, 16, 16)
+                                            setBackgroundColor(getColor(android.R.color.white))
+                                            layoutParams = LinearLayout.LayoutParams(
+                                                LinearLayout.LayoutParams.MATCH_PARENT,
+                                                LinearLayout.LayoutParams.WRAP_CONTENT
+                                            ).apply {
+                                                setMargins(0, 8, 0, 8)
+                                            }
+                                        }
+
+                                    val dateTextView = TextView(this@PatientLandingActivity).apply {
+                                        text = "Data: ${appointment.date}"
+                                        textSize = 16f
+                                        setTypeface(null, Typeface.BOLD)
+                                        setTextColor(getColor(android.R.color.black))
                                     }
-                                }
+                                    appointmentContainer.addView(dateTextView)
 
-                                val dateTextView = TextView(this@PatientLandingActivity).apply {
-                                    text = "Data: ${appointment.date}"
-                                    textSize = 16f
-                                    setTypeface(null, Typeface.BOLD)
-                                    setTextColor(getColor(android.R.color.black))
-                                }
-                                appointmentContainer.addView(dateTextView)
+                                    val timeTextView = TextView(this@PatientLandingActivity).apply {
+                                        text = "Ora: ${appointment.time}"
+                                        textSize = 14f
+                                        setTextColor(getColor(android.R.color.darker_gray))
+                                    }
+                                    appointmentContainer.addView(timeTextView)
 
-                                val timeTextView = TextView(this@PatientLandingActivity).apply {
-                                    text = "Ora: ${appointment.time}"
-                                    textSize = 14f
-                                    setTextColor(getColor(android.R.color.darker_gray))
+                                    appointmentList.addView(appointmentContainer)
                                 }
-                                appointmentContainer.addView(timeTextView)
-
-                                appointmentList.addView(appointmentContainer)
                             }
                         }
-                    }
-                } else {
-                    runOnUiThread {
-                        Toast.makeText(this@PatientLandingActivity, "Eroare la preluarea programărilor: ${response.message()}", Toast.LENGTH_LONG).show()
-                        Log.e("Appointments", "Error: ${response.code()} - ${response.message()}")
+                    } else {
+                        runOnUiThread {
+                            Toast.makeText(
+                                this@PatientLandingActivity,
+                                "Eroare la preluarea programărilor: ${response.message()}",
+                                Toast.LENGTH_LONG
+                            ).show()
+                            Log.e(
+                                "Appointments", "Error: ${response.code()} - ${response.message()}"
+                            )
+                        }
                     }
                 }
-            }
 
-            override fun onFailure(call: Call<List<AppointmentResponse>>, t: Throwable) {
-                runOnUiThread {
-                    Toast.makeText(this@PatientLandingActivity, "Eroare de rețea: ${t.message}", Toast.LENGTH_LONG).show()
-                    Log.e("Appointments", "Failure: ${t.message}", t)
+                override fun onFailure(call: Call<List<AppointmentResponse>>, t: Throwable) {
+                    runOnUiThread {
+                        Toast.makeText(
+                            this@PatientLandingActivity,
+                            "Eroare de rețea: ${t.message}",
+                            Toast.LENGTH_LONG
+                        ).show()
+                        Log.e("Appointments", "Failure: ${t.message}", t)
+                    }
                 }
-            }
-        })
+            })
     }
 
     private fun performLogout(refreshToken: String?) {
@@ -139,23 +164,22 @@ class PatientLandingActivity : AppCompatActivity() {
 
         val url = "http://89.33.44.130:8080/realms/HealthyApp/protocol/openid-connect/logout"
 
-        val formBody = okhttp3.FormBody.Builder()
-            .add("client_id", "android-app")
+        val formBody = okhttp3.FormBody.Builder().add("client_id", "android-app")
             .add("client_secret", "pHWo9QZW3f8avDCYSN5OSSoMcWCKNeCk")
-            .add("refresh_token", refreshToken)
-            .build()
+            .add("refresh_token", refreshToken).build()
 
-        val request = okhttp3.Request.Builder()
-            .url(url)
-            .post(formBody)
-            .build()
+        val request = okhttp3.Request.Builder().url(url).post(formBody).build()
 
         val client = okhttp3.OkHttpClient()
 
         client.newCall(request).enqueue(object : okhttp3.Callback {
             override fun onFailure(call: okhttp3.Call, e: IOException) {
                 runOnUiThread {
-                    Toast.makeText(this@PatientLandingActivity, "Logout failed: ${e.message}", Toast.LENGTH_LONG).show()
+                    Toast.makeText(
+                        this@PatientLandingActivity,
+                        "Logout failed: ${e.message}",
+                        Toast.LENGTH_LONG
+                    ).show()
                 }
             }
 
@@ -163,16 +187,26 @@ class PatientLandingActivity : AppCompatActivity() {
                 response.use {
                     if (it.isSuccessful) {
                         runOnUiThread {
-                            Toast.makeText(this@PatientLandingActivity, "Logout successful", Toast.LENGTH_LONG).show()
+                            Toast.makeText(
+                                this@PatientLandingActivity, "Logout successful", Toast.LENGTH_LONG
+                            ).show()
                             val sharedPrefs = getSharedPreferences("authPrefs", MODE_PRIVATE)
                             sharedPrefs.edit().clear().apply()
 
-                            startActivity(Intent(this@PatientLandingActivity, LoginActivity::class.java))
+                            startActivity(
+                                Intent(
+                                    this@PatientLandingActivity, LoginActivity::class.java
+                                )
+                            )
                             finish()
                         }
                     } else {
                         runOnUiThread {
-                            Toast.makeText(this@PatientLandingActivity, "Logout failed: ${it.message}", Toast.LENGTH_LONG).show()
+                            Toast.makeText(
+                                this@PatientLandingActivity,
+                                "Logout failed: ${it.message}",
+                                Toast.LENGTH_LONG
+                            ).show()
                         }
                     }
                 }
