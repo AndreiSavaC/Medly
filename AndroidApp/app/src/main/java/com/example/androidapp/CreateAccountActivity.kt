@@ -81,7 +81,7 @@ class CreateAccountActivity : AppCompatActivity() {
         createAccountButton.setOnClickListener {
             val insuranceCodeString = insuranceCodeEntry.text.toString()
 
-            if (insuranceCodeString.isNotEmpty() && insuranceCodeString.length == 3) {
+            if (insuranceCodeString.isNotEmpty() && (insuranceCodeString.length == 3 || insuranceCodeString.length == 20)) {
                 val insuranceCode = insuranceCodeString.toDoubleOrNull()
                 if (insuranceCode != null) {
                     validateInsuranceCode(insuranceCode) { insurance ->
