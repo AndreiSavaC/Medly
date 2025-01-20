@@ -1,12 +1,10 @@
 package com.example.androidapp
 
 import android.content.Intent
-import android.content.res.Resources
 import android.graphics.Typeface
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.view.ViewGroup
 import android.widget.DatePicker
 import android.widget.ImageButton
 import android.widget.LinearLayout
@@ -14,7 +12,10 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.androidapp.api.RetrofitClient
+import com.example.androidapp.models.Appointment
 import com.example.androidapp.models.AppointmentResponse
+import com.example.androidapp.models.UserResponse
+import org.w3c.dom.Text
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -27,6 +28,8 @@ class DoctorLandingActivity : AppCompatActivity() {
     private var refreshToken: String? = null
     private lateinit var appointmentList: LinearLayout
     private lateinit var datePicker: DatePicker
+    private lateinit var txtNoAppointments: TextView
+    private val appointmentsList = mutableListOf<Appointment>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,41 +58,26 @@ class DoctorLandingActivity : AppCompatActivity() {
 
         appointmentList = findViewById(R.id.appointment_list)
         datePicker = findViewById(R.id.datePicker)
+        txtNoAppointments = findViewById(R.id.txtNoAppointments)
         datePicker.firstDayOfWeek = Calendar.MONDAY
-
 
         val today = Calendar.getInstance()
         datePicker.init(
-            today.get(Calendar.YEAR),
-            today.get(Calendar.MONTH),
-            today.get(Calendar.DAY_OF_MONTH)
+            today.get(Calendar.YEAR), today.get(Calendar.MONTH), today.get(Calendar.DAY_OF_MONTH)
         ) { _, year, month, dayOfMonth ->
-            val selectedDate = String.format(Locale.getDefault(), "%02d-%02d-%04d", dayOfMonth, month + 1, year)
+            val selectedDate =
+                String.format(Locale.getDefault(), "%02d-%02d-%04d", dayOfMonth, month + 1, year)
             fetchAppointments(selectedDate)
         }
 
         val todayDate = String.format(
-            Locale("ro", "RO"),
+            Locale.getDefault(),
             "%02d-%02d-%04d",
             today.get(Calendar.DAY_OF_MONTH),
             today.get(Calendar.MONTH) + 1,
             today.get(Calendar.YEAR)
         )
         fetchAppointments(todayDate)
-
-        // Hide weekend days
-        val dayPickerView = datePicker.findViewById<ViewGroup>(
-            Resources.getSystem().getIdentifier("day", "id", "android")
-        )
-        if (dayPickerView != null) {
-            for (i in 0 until dayPickerView.childCount) {
-                val dayView = dayPickerView.getChildAt(i)
-                val dayOfWeek = (i + datePicker.firstDayOfWeek) % 7
-                if (dayOfWeek.equals(Calendar.SATURDAY) || dayOfWeek.equals(Calendar.SUNDAY)) {
-                    dayView.visibility = View.GONE
-                }
-            }
-        }
 
         datePicker.minDate = today.timeInMillis
     }
@@ -100,8 +88,8 @@ class DoctorLandingActivity : AppCompatActivity() {
             return
         }
 
-        val noAppointmentsTextView = findViewById<TextView>(R.id.txtNoAppointments)
         appointmentList.removeAllViews()
+        txtNoAppointments.visibility = View.GONE
 
         RetrofitClient.appointmentService.getAppointmentsByDoctorId(doctorId, date)
             .enqueue(object : Callback<List<AppointmentResponse>> {
@@ -111,50 +99,17 @@ class DoctorLandingActivity : AppCompatActivity() {
                 ) {
                     runOnUiThread {
                         if (response.isSuccessful) {
-                            val appointments = response.body()?.sortedWith(compareBy({ it.date }, { it.time })) ?: emptyList()
+                            val appointments =
+                                response.body()?.sortedWith(compareBy({ it.date }, { it.time }))
+                                    ?: emptyList()
 
                             if (appointments.isEmpty()) {
-                                noAppointmentsTextView.visibility = TextView.VISIBLE
-                                appointmentList.visibility = TextView.GONE
+                                txtNoAppointments.visibility = View.VISIBLE
                             } else {
-                                noAppointmentsTextView.visibility = TextView.GONE
-                                appointmentList.visibility = TextView.VISIBLE
-
-                                for (appointment in appointments) {
-                                    val appointmentContainer =
-                                        LinearLayout(this@DoctorLandingActivity).apply {
-                                            orientation = LinearLayout.VERTICAL
-                                            setPadding(16, 16, 16, 16)
-                                            setBackgroundColor(getColor(android.R.color.white))
-                                            layoutParams = LinearLayout.LayoutParams(
-                                                LinearLayout.LayoutParams.MATCH_PARENT,
-                                                LinearLayout.LayoutParams.WRAP_CONTENT
-                                            ).apply {
-                                                setMargins(0, 8, 0, 8)
-                                            }
-                                        }
-
-                                    val dateTextView = TextView(this@DoctorLandingActivity).apply {
-                                        text = "Data: ${appointment.date}"
-                                        textSize = 16f
-                                        setTypeface(null, Typeface.BOLD)
-                                        setTextColor(getColor(android.R.color.black))
-                                    }
-                                    appointmentContainer.addView(dateTextView)
-
-                                    val timeTextView = TextView(this@DoctorLandingActivity).apply {
-                                        text = "Ora: ${appointment.time}"
-                                        textSize = 14f
-                                        setTextColor(getColor(android.R.color.darker_gray))
-                                    }
-                                    appointmentContainer.addView(timeTextView)
-
-                                    appointmentList.addView(appointmentContainer)
-                                }
+                                fetchPatientDetails(appointments)
                             }
                         } else if (response.code() == 404) {
-                            noAppointmentsTextView.visibility = TextView.VISIBLE
-                            appointmentList.visibility = TextView.GONE
+                            txtNoAppointments.visibility = View.VISIBLE
                         } else {
                             Toast.makeText(
                                 this@DoctorLandingActivity,
@@ -181,6 +136,130 @@ class DoctorLandingActivity : AppCompatActivity() {
             })
     }
 
+    private fun fetchPatientDetails(appointmentResponses: List<AppointmentResponse>) {
+        val totalAppointments = appointmentResponses.size
+        var processedAppointments = 0
+
+        fun checkCompletion() {
+            processedAppointments++
+            if (processedAppointments == totalAppointments) {
+                runOnUiThread {
+                    appointmentList.removeAllViews()
+                    for (appointment in appointmentsList) {
+                        val appointmentContainer = LinearLayout(this@DoctorLandingActivity).apply {
+                            orientation = LinearLayout.VERTICAL
+                            setPadding(16, 16, 16, 16)
+                            setBackgroundColor(getColor(android.R.color.white))
+                            layoutParams = LinearLayout.LayoutParams(
+                                LinearLayout.LayoutParams.MATCH_PARENT,
+                                LinearLayout.LayoutParams.WRAP_CONTENT
+                            ).apply {
+                                setMargins(0, 8, 0, 8)
+                            }
+                            setOnClickListener {
+                                val intent = Intent(
+                                    this@DoctorLandingActivity,
+                                    AppointmentDetailsActivity::class.java
+                                ).apply {
+                                    putExtra("patientName", appointment.patientName)
+                                    putExtra("date", appointment.date)
+                                    putExtra("time", appointment.time)
+                                    putExtra("symptoms", appointment.symptoms)
+                                    putExtra("email", appointment.email)
+                                    putExtra("gender", appointment.gender)
+                                    putExtra("height", appointment.height)
+                                    putExtra("weight", appointment.weight)
+                                    putExtra("birthday", appointment.birthday)
+                                }
+                                startActivity(intent)
+                            }
+                        }
+
+                        val patientNameTextView = TextView(this@DoctorLandingActivity).apply {
+                            text = appointment.patientName
+                            textSize = 16f
+                            setTypeface(null, Typeface.BOLD)
+                            setTextColor(getColor(android.R.color.black))
+                        }
+                        appointmentContainer.addView(patientNameTextView)
+
+                        val dateTextView = TextView(this@DoctorLandingActivity).apply {
+                            text = "Data: ${appointment.date}"
+                            textSize = 14f
+                            setTypeface(null, Typeface.BOLD)
+                            setTextColor(getColor(android.R.color.darker_gray))
+                        }
+                        appointmentContainer.addView(dateTextView)
+
+                        val timeTextView = TextView(this@DoctorLandingActivity).apply {
+                            text = "Ora: ${appointment.time}"
+                            textSize = 14f
+                            setTextColor(getColor(android.R.color.darker_gray))
+                        }
+                        appointmentContainer.addView(timeTextView)
+
+                        val checkOutText = TextView(this@DoctorLandingActivity).apply {
+                            text = "Vezi detalii >"
+                            textSize = 14f
+                            setTextColor(getColor(R.color.secondaryColor))
+                        }
+                        appointmentContainer.addView(checkOutText)
+
+                        appointmentList.addView(appointmentContainer)
+                    }
+                }
+            }
+        }
+
+        for (appointmentResponse in appointmentResponses) {
+            val patientId = appointmentResponse.patientId
+
+            RetrofitClient.userService.getUserById(patientId)
+                .enqueue(object : Callback<UserResponse> {
+                    override fun onResponse(
+                        call: Call<UserResponse>, response: Response<UserResponse>
+                    ) {
+                        if (response.isSuccessful) {
+                            val userResponse = response.body()
+                            if (userResponse != null) {
+                                val appointment =
+                                    mapToAppointment(userResponse, appointmentResponse)
+                                appointmentsList.add(appointment)
+                            } else {
+                                val appointment = mapToAppointment(null, appointmentResponse)
+                                appointmentsList.add(appointment)
+                            }
+                        } else {
+                            val appointment = mapToAppointment(null, appointmentResponse)
+                            appointmentsList.add(appointment)
+                        }
+                        checkCompletion()
+                    }
+
+                    override fun onFailure(call: Call<UserResponse>, t: Throwable) {
+                        val appointment = mapToAppointment(null, appointmentResponse)
+                        appointmentsList.add(appointment)
+                        checkCompletion()
+                    }
+                })
+        }
+    }
+
+    private fun mapToAppointment(
+        userResponse: UserResponse?, appointmentResponse: AppointmentResponse
+    ): Appointment {
+        return Appointment(patientName = userResponse?.let { "${it.firstName} ${it.lastName}" }
+            ?: "Necunoscut",
+            date = appointmentResponse.date,
+            time = appointmentResponse.time,
+            symptoms = appointmentResponse.symptoms.joinToString(", "),
+            email = userResponse?.email ?: "N/A",
+            gender = userResponse?.gender ?: "N/A",
+            height = userResponse?.height ?: 0.0f,
+            weight = userResponse?.weight ?: 0.0f,
+            birthday = userResponse?.birthday ?: "N/A")
+    }
+
     private fun performLogout(refreshToken: String?) {
         if (refreshToken.isNullOrEmpty()) {
             val sharedPrefs = getSharedPreferences("authPrefs", MODE_PRIVATE)
@@ -193,23 +272,20 @@ class DoctorLandingActivity : AppCompatActivity() {
 
         val url = "http://89.33.44.130:8080/realms/HealthyApp/protocol/openid-connect/logout"
 
-        val formBody = okhttp3.FormBody.Builder()
-            .add("client_id", "android-app")
+        val formBody = okhttp3.FormBody.Builder().add("client_id", "android-app")
             .add("client_secret", "pHWo9QZW3f8avDCYSN5OSSoMcWCKNeCk")
-            .add("refresh_token", refreshToken)
-            .build()
+            .add("refresh_token", refreshToken).build()
 
-        val request = okhttp3.Request.Builder()
-            .url(url)
-            .post(formBody)
-            .build()
+        val request = okhttp3.Request.Builder().url(url).post(formBody).build()
 
         val client = okhttp3.OkHttpClient()
 
         client.newCall(request).enqueue(object : okhttp3.Callback {
             override fun onFailure(call: okhttp3.Call, e: IOException) {
                 runOnUiThread {
-                    Toast.makeText(this@DoctorLandingActivity, "Logout failed: ${e.message}", Toast.LENGTH_LONG).show()
+                    Toast.makeText(
+                        this@DoctorLandingActivity, "Logout failed: ${e.message}", Toast.LENGTH_LONG
+                    ).show()
                 }
             }
 
@@ -217,16 +293,26 @@ class DoctorLandingActivity : AppCompatActivity() {
                 response.use {
                     if (it.isSuccessful) {
                         runOnUiThread {
-                            Toast.makeText(this@DoctorLandingActivity, "Logout successful", Toast.LENGTH_LONG).show()
+                            Toast.makeText(
+                                this@DoctorLandingActivity, "Logout successful", Toast.LENGTH_LONG
+                            ).show()
                             val sharedPrefs = getSharedPreferences("authPrefs", MODE_PRIVATE)
                             sharedPrefs.edit().clear().apply()
 
-                            startActivity(Intent(this@DoctorLandingActivity, LoginActivity::class.java))
+                            startActivity(
+                                Intent(
+                                    this@DoctorLandingActivity, LoginActivity::class.java
+                                )
+                            )
                             finish()
                         }
                     } else {
                         runOnUiThread {
-                            Toast.makeText(this@DoctorLandingActivity, "Logout failed: ${it.message}", Toast.LENGTH_LONG).show()
+                            Toast.makeText(
+                                this@DoctorLandingActivity,
+                                "Logout failed: ${it.message}",
+                                Toast.LENGTH_LONG
+                            ).show()
                         }
                     }
                 }
