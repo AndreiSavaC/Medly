@@ -19,7 +19,6 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-
 class CreateAccountActivity : AppCompatActivity() {
 
     @Deprecated("This is a temporary solution.")
@@ -37,7 +36,6 @@ class CreateAccountActivity : AppCompatActivity() {
             override fun onResponse(call: Call<Insurance>, response: Response<Insurance>) {
                 if (response.isSuccessful) {
                     val insurance = response.body()
-
                     callback(insurance)
                 } else {
                     callback(null)

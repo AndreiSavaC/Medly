@@ -12,10 +12,10 @@ class UserInfoActivity : AppCompatActivity() {
 
     @Deprecated("This is a temporary solution.")
     @Suppress("MissingSuperCall")
-    override fun onBackPressed() {
-        startActivity(Intent(this, MainMenuActivity::class.java))
-        finish()
-    }
+//    override fun onBackPressed() {
+//        startActivity(Intent(this, MainMenuActivity::class.java))
+//        finish()
+//    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

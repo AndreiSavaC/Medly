@@ -154,6 +154,18 @@
                     android:dividerPadding="8dp"
                     android:orientation="vertical"
                     android:showDividers="middle" />
+                <TextView
+                    android:id="@+id/txtNoAppointments"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Nu există programări viitoare."
+                    android:textSize="18sp"
+                    android:gravity="center"
+                    android:textColor="@android:color/darker_gray"
+                    android:visibility="gone"
+                    android:padding="16dp"/>
+
+
             </LinearLayout>
         </LinearLayout>
     </ScrollView>

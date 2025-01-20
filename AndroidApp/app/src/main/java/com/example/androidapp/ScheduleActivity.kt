@@ -155,13 +155,19 @@ class ScheduleActivity : AppCompatActivity() {
 
     private fun updateWeekDays() {
         weekCalendar.removeAllViews()
-        val daysOfWeek = listOf("Lun", "Mar", "Mie", "Joi", "Vin",)
+        val daysOfWeek = listOf("Lun", "Mar", "Mie", "Joi", "Vin")
+
+        val now = Calendar.getInstance()
+        val currentHour = now.get(Calendar.HOUR_OF_DAY)
+        val currentMinute = now.get(Calendar.MINUTE)
+        val isAfterCutoff = currentHour > 13 || (currentHour == 13 && currentMinute >= 30)
 
         for (i in 0..4) {
             val day = weekStart.clone() as Calendar
             day.add(Calendar.DAY_OF_MONTH, i)
 
             val isPastDay = day.before(Calendar.getInstance()) && !isSameDay(day, Calendar.getInstance())
+            val isBlockedToday = isSameDay(day, now) && isAfterCutoff
 
             val dayView = TextView(this).apply {
                 text = "${daysOfWeek[i]}\n${day.get(Calendar.DAY_OF_MONTH)}"
@@ -169,17 +175,19 @@ class ScheduleActivity : AppCompatActivity() {
                 setPadding(16, 8, 16, 8)
                 layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
 
-                setTextColor(ContextCompat.getColor(this@ScheduleActivity, android.R.color.black))
-                if (isPastDay) {
-                    setTextColor(ContextCompat.getColor(this@ScheduleActivity, android.R.color.darker_gray))
-                    isClickable = false
-                } else {
-                    setTextColor(ContextCompat.getColor(this@ScheduleActivity, android.R.color.black))
-                    isClickable = true
+                when {
+                    isPastDay || isBlockedToday -> {
+                        setTextColor(ContextCompat.getColor(this@ScheduleActivity, android.R.color.darker_gray))
+                        isClickable = false
+                    }
+                    else -> {
+                        setTextColor(ContextCompat.getColor(this@ScheduleActivity, android.R.color.black))
+                        isClickable = true
+                    }
                 }
 
                 setOnClickListener {
-                    if (!isPastDay) {
+                    if (!isPastDay && !isBlockedToday) {
                         clearSelection()
                         setBackgroundResource(R.drawable.day_selector)
                         selectedDate = day
@@ -195,23 +203,25 @@ class ScheduleActivity : AppCompatActivity() {
     private fun selectCurrentDayAndFetchAppointments() {
         val currentDay = Calendar.getInstance()
 
+        val currentHour = currentDay.get(Calendar.HOUR_OF_DAY)
+        val currentMinute = currentDay.get(Calendar.MINUTE)
+
+        if (currentHour > 13 || (currentHour == 13 && currentMinute >= 30)) {
+            currentDay.add(Calendar.DAY_OF_MONTH, 1) // Mergem la ziua următoare
+        }
+
         if (currentDay.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY ||
             currentDay.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY) {
             currentDay.add(Calendar.DAY_OF_MONTH, if (currentDay.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY) 2 else 1)
-            weekStart = currentDay.clone() as Calendar
-            weekStart.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY)
-            updateWeekDisplay()
-
-            selectedDate = currentDay
-            updateAvailableHoursText(selectedDate)
-            fetchAppointmentsForSelectedDate(getFormattedDate(currentDay))
-
-            val mondayView = weekCalendar.getChildAt(0)
-            mondayView?.setBackgroundResource(R.drawable.day_selector)
-            return
         }
 
-        val today = getFormattedDate(currentDay)
+        weekStart = currentDay.clone() as Calendar
+        weekStart.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY)
+        updateWeekDisplay()
+
+        selectedDate = currentDay
+        updateAvailableHoursText(selectedDate)
+        fetchAppointmentsForSelectedDate(getFormattedDate(currentDay))
 
         for (i in 0..4) {
             val day = weekStart.clone() as Calendar
@@ -221,10 +231,6 @@ class ScheduleActivity : AppCompatActivity() {
                 clearSelection()
                 val dayView = weekCalendar.getChildAt(i)
                 dayView?.setBackgroundResource(R.drawable.day_selector)
-
-                updateAvailableHoursText(currentDay)
-
-                fetchAppointmentsForSelectedDate(today)
                 break
             }
         }

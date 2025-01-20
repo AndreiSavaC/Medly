@@ -56,9 +56,9 @@ class PatientLandingActivity : AppCompatActivity() {
             startActivity(Intent(this, ScheduleActivity::class.java))
         }
 
-        btnEditProfile.setOnClickListener {
-            startActivity(Intent(this, MainMenuActivity::class.java))
-        }
+//        btnEditProfile.setOnClickListener {
+//            startActivity(Intent(this, MainMenuActivity::class.java))
+//        }
 
         appointmentList = findViewById(R.id.appointment_list)
     }
@@ -74,6 +74,7 @@ class PatientLandingActivity : AppCompatActivity() {
             return
         }
 
+        val noAppointmentsTextView = findViewById<TextView>(R.id.txtNoAppointments)
         appointmentList.removeAllViews()
 
         RetrofitClient.appointmentService.getAppointmentsByPatientId(patientId)
@@ -82,16 +83,17 @@ class PatientLandingActivity : AppCompatActivity() {
                     call: Call<List<AppointmentResponse>>,
                     response: Response<List<AppointmentResponse>>
                 ) {
-                    if (response.isSuccessful) {
-                        val appointments = response.body() ?: emptyList()
-                        runOnUiThread {
+                    runOnUiThread {
+                        if (response.isSuccessful) {
+                            val appointments = response.body() ?: emptyList()
+
                             if (appointments.isEmpty()) {
-                                Toast.makeText(
-                                    this@PatientLandingActivity,
-                                    "Nu ai programări.",
-                                    Toast.LENGTH_LONG
-                                ).show()
+                                noAppointmentsTextView.visibility = TextView.VISIBLE
+                                appointmentList.visibility = TextView.GONE
                             } else {
+                                noAppointmentsTextView.visibility = TextView.GONE
+                                appointmentList.visibility = TextView.VISIBLE
+
                                 for (appointment in appointments) {
                                     val appointmentContainer =
                                         LinearLayout(this@PatientLandingActivity).apply {
@@ -124,9 +126,10 @@ class PatientLandingActivity : AppCompatActivity() {
                                     appointmentList.addView(appointmentContainer)
                                 }
                             }
-                        }
-                    } else {
-                        runOnUiThread {
+                        } else if (response.code() == 404) {
+                            noAppointmentsTextView.visibility = TextView.VISIBLE
+                            appointmentList.visibility = TextView.GONE
+                        } else {
                             Toast.makeText(
                                 this@PatientLandingActivity,
                                 "Eroare la preluarea programărilor: ${response.message()}",
@@ -151,6 +154,7 @@ class PatientLandingActivity : AppCompatActivity() {
                 }
             })
     }
+
 
     private fun performLogout(refreshToken: String?) {
         if (refreshToken.isNullOrEmpty()) {
