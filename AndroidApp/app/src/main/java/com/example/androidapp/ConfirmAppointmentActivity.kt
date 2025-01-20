@@ -3,19 +3,20 @@ package com.example.androidapp
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.MenuItem
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import com.example.androidapp.api.RetrofitClient
 import com.example.androidapp.models.AppointmentRequest
+import com.example.androidapp.models.UserResponse
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import android.view.MenuItem
-import androidx.appcompat.widget.Toolbar
 
 class ConfirmAppointmentActivity : AppCompatActivity() {
 
@@ -55,14 +56,14 @@ class ConfirmAppointmentActivity : AppCompatActivity() {
         val symptomsCategoryContainer = findViewById<LinearLayout>(R.id.containerSymptomsCategory)
         val scheduleButton = findViewById<Button>(R.id.btnSchedule)
 
-        val doctorName = "Dr. Popescu Ion"
+        doctorTextView.text = "Doctor: Loading..."
+
         dateTextView.text = "Zi selectată: $selectedDate"
         hourTextView.text = "Ora selectată: $selectedHour"
-        doctorTextView.text = "Doctor: $doctorName"
 
         val symptomsList = intent.getStringArrayListExtra("selectedSymptoms") ?: arrayListOf()
-
-        val categorySymptomsList = intent.getStringArrayListExtra("categorySymptoms") ?: arrayListOf()
+        val categorySymptomsList =
+            intent.getStringArrayListExtra("categorySymptoms") ?: arrayListOf()
 
         val symptomsByCategory = mutableMapOf<String, MutableList<String>>()
 
@@ -71,9 +72,10 @@ class ConfirmAppointmentActivity : AppCompatActivity() {
             if (parts.size == 2) {
                 val categoryName = parts[0].trim()
                 val symptomNames = parts[1].split(",").map { it.trim() }
-                symptomsByCategory[categoryName] = symptomsByCategory.getOrDefault(categoryName, mutableListOf()).apply {
-                    addAll(symptomNames)
-                }
+                symptomsByCategory[categoryName] =
+                    symptomsByCategory.getOrDefault(categoryName, mutableListOf()).apply {
+                        addAll(symptomNames)
+                    }
             }
         }
 
@@ -105,9 +107,67 @@ class ConfirmAppointmentActivity : AppCompatActivity() {
             symptomsCategoryContainer.addView(noSymptomsTextView)
         }
 
+        fetchDoctorName(doctorId, doctorTextView)
+
         scheduleButton.setOnClickListener {
             scheduleAppointment(selectedDate, selectedHour, symptomsList)
         }
+    }
+
+    private fun fetchDoctorName(doctorId: Int, doctorTextView: TextView) {
+        if (doctorId == -1) {
+            doctorTextView.text = "Doctor: N/A"
+            Toast.makeText(
+                this,
+                "Eroare: ID-ul doctorului este invalid.",
+                Toast.LENGTH_LONG
+            ).show()
+            return
+        }
+
+        RetrofitClient.userService.getUserById(doctorId)
+            .enqueue(object : Callback<UserResponse> {
+                override fun onResponse(
+                    call: Call<UserResponse>,
+                    response: Response<UserResponse>
+                ) {
+                    if (response.isSuccessful) {
+                        val user = response.body()
+                        if (user != null) {
+                            val fullName = "${user.firstName} ${user.lastName}"
+                            doctorTextView.text = "Doctor: $fullName"
+                        } else {
+                            doctorTextView.text = "Doctor: N/A"
+                            Toast.makeText(
+                                this@ConfirmAppointmentActivity,
+                                "Eroare: Nu s-a găsit doctorul.",
+                                Toast.LENGTH_LONG
+                            ).show()
+                        }
+                    } else {
+                        doctorTextView.text = "Doctor: N/A"
+                        Toast.makeText(
+                            this@ConfirmAppointmentActivity,
+                            "Eroare la încărcarea datelor doctorului: ${response.message()}",
+                            Toast.LENGTH_LONG
+                        ).show()
+                        Log.e(
+                            "ConfirmAppointment",
+                            "Eroare la API: ${response.errorBody()?.string()}"
+                        )
+                    }
+                }
+
+                override fun onFailure(call: Call<UserResponse>, t: Throwable) {
+                    doctorTextView.text = "Doctor: N/A"
+                    Toast.makeText(
+                        this@ConfirmAppointmentActivity,
+                        "Eroare de rețea: ${t.message}",
+                        Toast.LENGTH_LONG
+                    ).show()
+                    Log.e("ConfirmAppointment", "Eroare de rețea", t)
+                }
+            })
     }
 
     private fun scheduleAppointment(date: String, time: String, symptoms: List<String>) {
@@ -128,10 +188,12 @@ class ConfirmAppointmentActivity : AppCompatActivity() {
             symptoms = symptoms
         )
 
-
         RetrofitClient.appointmentService.createAppointment(appointmentRequest)
             .enqueue(object : Callback<ResponseBody> {
-                override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+                override fun onResponse(
+                    call: Call<ResponseBody>,
+                    response: Response<ResponseBody>
+                ) {
                     if (response.isSuccessful) {
                         Toast.makeText(
                             this@ConfirmAppointmentActivity,
@@ -139,9 +201,13 @@ class ConfirmAppointmentActivity : AppCompatActivity() {
                             Toast.LENGTH_SHORT
                         ).show()
 
-                        val intent = Intent(this@ConfirmAppointmentActivity, PatientLandingActivity::class.java)
+                        val intent = Intent(
+                            this@ConfirmAppointmentActivity,
+                            PatientLandingActivity::class.java
+                        )
 
-                        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                        intent.flags =
+                            Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
 
                         startActivity(intent)
 
@@ -152,7 +218,10 @@ class ConfirmAppointmentActivity : AppCompatActivity() {
                             "Eroare: ${response.message()}",
                             Toast.LENGTH_SHORT
                         ).show()
-                        Log.e("ConfirmAppointment", "Eroare la programare: ${response.errorBody()?.string()}")
+                        Log.e(
+                            "ConfirmAppointment",
+                            "Eroare la programare: ${response.errorBody()?.string()}"
+                        )
                     }
                 }
 
@@ -173,6 +242,7 @@ class ConfirmAppointmentActivity : AppCompatActivity() {
                 onBackPressedDispatcher.onBackPressed()
                 true
             }
+
             else -> super.onOptionsItemSelected(item)
         }
     }
