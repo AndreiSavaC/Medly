@@ -56,10 +56,6 @@ class PatientLandingActivity : AppCompatActivity() {
             startActivity(Intent(this, ScheduleActivity::class.java))
         }
 
-//        btnEditProfile.setOnClickListener {
-//            startActivity(Intent(this, MainMenuActivity::class.java))
-//        }
-
         appointmentList = findViewById(R.id.appointment_list)
     }
 

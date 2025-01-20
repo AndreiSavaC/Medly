@@ -1,19 +1,20 @@
 package com.example.androidapp
 
 import android.content.Intent
+import android.content.res.Resources
+import android.graphics.Typeface
 import android.os.Bundle
+import android.util.Log
 import android.view.View
+import android.view.ViewGroup
 import android.widget.DatePicker
 import android.widget.ImageButton
+import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.example.androidapp.api.RetrofitClient
-import com.example.androidapp.models.Appointment
 import com.example.androidapp.models.AppointmentResponse
-import com.example.androidapp.models.UserResponse
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -22,87 +23,85 @@ import java.util.*
 
 class DoctorLandingActivity : AppCompatActivity() {
 
-    private lateinit var appointmentAdapter: AppointmentAdapter
-    private val appointmentsList = mutableListOf<Appointment>()
-
     private var doctorId: Int = -1
     private var refreshToken: String? = null
-
-    private lateinit var txtAvailableAppointments: TextView
-    private lateinit var txtNoAppointments: TextView
+    private lateinit var appointmentList: LinearLayout
+    private lateinit var datePicker: DatePicker
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_doctor_landing)
 
-        val btnLogout = findViewById<ImageButton>(R.id.btnLogout)
-        val recyclerViewAppointments: RecyclerView = findViewById(R.id.recyclerViewAppointments)
-        val datePicker: DatePicker = findViewById(R.id.datePicker)
-        txtAvailableAppointments = findViewById(R.id.txtAvailableAppointments)
-        txtNoAppointments = findViewById(R.id.txtNoAppointments)
-
-        val today = Calendar.getInstance()
-        datePicker.minDate = today.timeInMillis - 1000
-
         val sharedPreferences = getSharedPreferences("authPrefs", MODE_PRIVATE)
         refreshToken = sharedPreferences.getString("REFRESH_TOKEN", null)
         doctorId = sharedPreferences.getInt("PATIENT_ID", -1)
+        val userFirstName: String? = sharedPreferences.getString("FIRST_NAME", "")
+        val userLastName: String? = sharedPreferences.getString("LAST_NAME", "")
 
         if (doctorId == -1) {
-            Toast.makeText(this, "Doctor ID nu a fost găsit.", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, "Doctor ID not found.", Toast.LENGTH_LONG).show()
             startActivity(Intent(this, LoginActivity::class.java))
             finish()
             return
         }
 
+        val userNameTextView = findViewById<TextView>(R.id.userNameTextView2)
+        userNameTextView.text = "$userFirstName $userLastName"
+
+        val btnLogout = findViewById<ImageButton>(R.id.btnLogout)
         btnLogout.setOnClickListener {
             performLogout(refreshToken)
         }
 
-        appointmentAdapter = AppointmentAdapter(appointmentsList) { appointment ->
-            val intent = Intent(this, AppointmentDetailsActivity::class.java).apply {
-                putExtra("patientName", appointment.patientName)
-                putExtra("date", appointment.date)
-                putExtra("time", appointment.time)
-                putExtra("symptoms", appointment.symptoms)
-                putExtra("email", appointment.email)
-                putExtra("gender", appointment.gender)
-                putExtra("height", appointment.height)
-                putExtra("weight", appointment.weight)
-                putExtra("birthday", appointment.birthday)
-            }
-            startActivity(intent)
-        }
-        recyclerViewAppointments.layoutManager = LinearLayoutManager(this)
-        recyclerViewAppointments.adapter = appointmentAdapter
+        appointmentList = findViewById(R.id.appointment_list)
+        datePicker = findViewById(R.id.datePicker)
+        datePicker.firstDayOfWeek = Calendar.MONDAY
 
+
+        val today = Calendar.getInstance()
         datePicker.init(
             today.get(Calendar.YEAR),
             today.get(Calendar.MONTH),
             today.get(Calendar.DAY_OF_MONTH)
         ) { _, year, month, dayOfMonth ->
             val selectedDate = String.format(Locale.getDefault(), "%02d-%02d-%04d", dayOfMonth, month + 1, year)
-            txtAvailableAppointments.text = selectedDate
-            loadAppointmentsForDate(selectedDate)
+            fetchAppointments(selectedDate)
         }
 
         val todayDate = String.format(
-            Locale.getDefault(),
+            Locale("ro", "RO"),
             "%02d-%02d-%04d",
             today.get(Calendar.DAY_OF_MONTH),
             today.get(Calendar.MONTH) + 1,
             today.get(Calendar.YEAR)
         )
-        txtAvailableAppointments.text = todayDate
-        loadAppointmentsForDate(todayDate)
+        fetchAppointments(todayDate)
+
+        // Hide weekend days
+        val dayPickerView = datePicker.findViewById<ViewGroup>(
+            Resources.getSystem().getIdentifier("day", "id", "android")
+        )
+        if (dayPickerView != null) {
+            for (i in 0 until dayPickerView.childCount) {
+                val dayView = dayPickerView.getChildAt(i)
+                val dayOfWeek = (i + datePicker.firstDayOfWeek) % 7
+                if (dayOfWeek.equals(Calendar.SATURDAY) || dayOfWeek.equals(Calendar.SUNDAY)) {
+                    dayView.visibility = View.GONE
+                }
+            }
+        }
+
+        datePicker.minDate = today.timeInMillis
     }
 
-    private fun loadAppointmentsForDate(date: String) {
-        appointmentsList.clear()
-        appointmentAdapter.notifyDataSetChanged()
+    private fun fetchAppointments(date: String) {
+        if (doctorId == -1) {
+            Toast.makeText(this, "Doctor ID invalid.", Toast.LENGTH_LONG).show()
+            return
+        }
 
-        txtNoAppointments.visibility = View.GONE
-        findViewById<RecyclerView>(R.id.recyclerViewAppointments).visibility = View.VISIBLE
+        val noAppointmentsTextView = findViewById<TextView>(R.id.txtNoAppointments)
+        appointmentList.removeAllViews()
 
         RetrofitClient.appointmentService.getAppointmentsByDoctorId(doctorId, date)
             .enqueue(object : Callback<List<AppointmentResponse>> {
@@ -110,30 +109,61 @@ class DoctorLandingActivity : AppCompatActivity() {
                     call: Call<List<AppointmentResponse>>,
                     response: Response<List<AppointmentResponse>>
                 ) {
-                    if (response.isSuccessful) {
-                        val appointmentResponses = response.body() ?: emptyList()
-                        if (appointmentResponses.isEmpty()) {
-                            runOnUiThread {
-                                txtNoAppointments.text = "Nu există programări pentru $date."
-                                txtNoAppointments.visibility = View.VISIBLE
-                                findViewById<RecyclerView>(R.id.recyclerViewAppointments).visibility = View.GONE
+                    runOnUiThread {
+                        if (response.isSuccessful) {
+                            val appointments = response.body()?.sortedWith(compareBy({ it.date }, { it.time })) ?: emptyList()
+
+                            if (appointments.isEmpty()) {
+                                noAppointmentsTextView.visibility = TextView.VISIBLE
+                                appointmentList.visibility = TextView.GONE
+                            } else {
+                                noAppointmentsTextView.visibility = TextView.GONE
+                                appointmentList.visibility = TextView.VISIBLE
+
+                                for (appointment in appointments) {
+                                    val appointmentContainer =
+                                        LinearLayout(this@DoctorLandingActivity).apply {
+                                            orientation = LinearLayout.VERTICAL
+                                            setPadding(16, 16, 16, 16)
+                                            setBackgroundColor(getColor(android.R.color.white))
+                                            layoutParams = LinearLayout.LayoutParams(
+                                                LinearLayout.LayoutParams.MATCH_PARENT,
+                                                LinearLayout.LayoutParams.WRAP_CONTENT
+                                            ).apply {
+                                                setMargins(0, 8, 0, 8)
+                                            }
+                                        }
+
+                                    val dateTextView = TextView(this@DoctorLandingActivity).apply {
+                                        text = "Data: ${appointment.date}"
+                                        textSize = 16f
+                                        setTypeface(null, Typeface.BOLD)
+                                        setTextColor(getColor(android.R.color.black))
+                                    }
+                                    appointmentContainer.addView(dateTextView)
+
+                                    val timeTextView = TextView(this@DoctorLandingActivity).apply {
+                                        text = "Ora: ${appointment.time}"
+                                        textSize = 14f
+                                        setTextColor(getColor(android.R.color.darker_gray))
+                                    }
+                                    appointmentContainer.addView(timeTextView)
+
+                                    appointmentList.addView(appointmentContainer)
+                                }
                             }
+                        } else if (response.code() == 404) {
+                            noAppointmentsTextView.visibility = TextView.VISIBLE
+                            appointmentList.visibility = TextView.GONE
                         } else {
-                            fetchPatientDetails(appointmentResponses)
-                        }
-                    } else if (response.code() == 404) {
-                        runOnUiThread {
-                            txtNoAppointments.text = "Nu există programări pentru $date."
-                            txtNoAppointments.visibility = View.VISIBLE
-                            findViewById<RecyclerView>(R.id.recyclerViewAppointments).visibility = View.GONE
-                        }
-                    } else {
-                        runOnUiThread {
                             Toast.makeText(
                                 this@DoctorLandingActivity,
-                                "Eroare la încărcarea programărilor: ${response.message()}",
+                                "Eroare la preluarea programărilor: ${response.message()}",
                                 Toast.LENGTH_LONG
                             ).show()
+                            Log.e(
+                                "Appointments", "Error: ${response.code()} - ${response.message()}"
+                            )
                         }
                     }
                 }
@@ -145,73 +175,11 @@ class DoctorLandingActivity : AppCompatActivity() {
                             "Eroare de rețea: ${t.message}",
                             Toast.LENGTH_LONG
                         ).show()
+                        Log.e("Appointments", "Failure: ${t.message}", t)
                     }
                 }
             })
     }
-
-    private fun fetchPatientDetails(appointmentResponses: List<AppointmentResponse>) {
-        val totalAppointments = appointmentResponses.size
-        var processedAppointments = 0
-
-        fun checkCompletion() {
-            processedAppointments++
-            if (processedAppointments == totalAppointments) {
-                runOnUiThread {
-                    appointmentAdapter.notifyDataSetChanged()
-                }
-            }
-        }
-
-        for (appointmentResponse in appointmentResponses) {
-            val patientId = appointmentResponse.patientId
-
-            RetrofitClient.userService.getUserById(patientId)
-                .enqueue(object : Callback<UserResponse> {
-                    override fun onResponse(
-                        call: Call<UserResponse>,
-                        response: Response<UserResponse>
-                    ) {
-                        if (response.isSuccessful) {
-                            val userResponse = response.body()
-                            if (userResponse != null) {
-                                val name = "${userResponse.firstName} ${userResponse.lastName}"
-                                val appointment = mapToAppointment(userResponse, appointmentResponse)
-                                appointmentsList.add(appointment)
-                            } else {
-                                val appointment = mapToAppointment(null, appointmentResponse)
-                                appointmentsList.add(appointment)
-                            }
-                        } else {
-                            val appointment = mapToAppointment(null, appointmentResponse)
-                            appointmentsList.add(appointment)
-                        }
-                        checkCompletion()
-                    }
-
-                    override fun onFailure(call: Call<UserResponse>, t: Throwable) {
-                        val appointment = mapToAppointment(null, appointmentResponse)
-                        appointmentsList.add(appointment)
-                        checkCompletion()
-                    }
-                })
-        }
-    }
-
-    private fun mapToAppointment(userResponse: UserResponse?, appointmentResponse: AppointmentResponse): Appointment {
-        return Appointment(
-            patientName = userResponse?.let { "${it.firstName} ${it.lastName}" } ?: "Necunoscut",
-            date = appointmentResponse.date,
-            time = appointmentResponse.time,
-            symptoms = appointmentResponse.symptoms.joinToString(", "),
-            email = userResponse?.email ?: "N/A",
-            gender = userResponse?.gender ?: "N/A",
-            height = userResponse?.height ?: 0.0f,
-            weight = userResponse?.weight ?: 0.0f,
-            birthday = userResponse?.birthday ?: "N/A"
-        )
-    }
-
 
     private fun performLogout(refreshToken: String?) {
         if (refreshToken.isNullOrEmpty()) {
@@ -266,17 +234,3 @@ class DoctorLandingActivity : AppCompatActivity() {
         })
     }
 }
-//{
-//    "id": 2,
-//    "keycloakId": "489f2c3d-a773-4d4a-8657-55a59cdd6362",
-//    "firstName": "Andrei",
-//    "lastName": "Maciuca",
-//    "email": "andreimaciuca@maciuca.com",
-//    "gender": "Male",
-//    "height": 190.0,
-//    "weight": 110.0,
-//    "birthday": "2000-08-04",
-//    "doctorId": 1,
-//    "isDoctor": false,
-//    "isAdmin": false
-//}
