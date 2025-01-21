@@ -21,6 +21,9 @@ import retrofit2.Response
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class ReportActivity : AppCompatActivity() {
 
@@ -117,7 +120,6 @@ class ReportActivity : AppCompatActivity() {
         val pageInfo = PdfDocument.PageInfo.Builder(595, 842, 1).create()
         val page = document.startPage(pageInfo)
 
-
         val content = textViewReport.text.toString()
         val canvas = page.canvas
         val paint = android.graphics.Paint()
@@ -131,10 +133,12 @@ class ReportActivity : AppCompatActivity() {
 
         document.finishPage(page)
 
+        val dateFormat = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault())
+        val currentDateTime = dateFormat.format(Date())
         val directoryPath =
             Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
                 .toString()
-        val file = File(directoryPath, "${patientName}.pdf")
+        val file = File(directoryPath, "${patientName}_$currentDateTime.pdf")
 
         try {
             document.writeTo(FileOutputStream(file))

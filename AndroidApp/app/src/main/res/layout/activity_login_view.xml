@@ -89,7 +89,7 @@
             android:id="@+id/createAccountButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:backgroundTint="@android:color/darker_gray"
+            android:backgroundTint="@color/secondaryColor"
             android:fontFamily="@font/montserrat_bold"
             android:padding="16dp"
             android:text="Creeaza cont"
