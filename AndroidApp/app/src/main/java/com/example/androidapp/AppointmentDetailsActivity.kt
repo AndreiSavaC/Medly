@@ -2,10 +2,12 @@ package com.example.androidapp
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.MenuItem
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 
 class AppointmentDetailsActivity : AppCompatActivity() {
 
@@ -21,6 +23,13 @@ class AppointmentDetailsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_appointment_details)
+
+        val toolbar: Toolbar = findViewById(R.id.toolbar)
+        setSupportActionBar(toolbar)
+        supportActionBar?.apply {
+            setDisplayHomeAsUpEnabled(true)
+            setHomeAsUpIndicator(R.drawable.ic_arrow_back)
+        }
 
         textViewPatientName = findViewById(R.id.txtPacienteName)
         textViewDate = findViewById(R.id.txtSelectedDate)
@@ -59,6 +68,17 @@ class AppointmentDetailsActivity : AppCompatActivity() {
             } else {
                 Toast.makeText(this, "Nu există simptome de trimis.", Toast.LENGTH_SHORT).show()
             }
+        }
+
+    }
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            android.R.id.home -> {
+                onBackPressedDispatcher.onBackPressed()
+                true
+            }
+
+            else -> super.onOptionsItemSelected(item)
         }
     }
 }

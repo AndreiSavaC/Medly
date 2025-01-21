@@ -138,7 +138,7 @@ class DoctorLandingActivity : AppCompatActivity() {
             processedAppointments++
             if (processedAppointments == totalAppointments) {
                 runOnUiThread {
-                    // Sort appointments by date and time
+
                     appointmentsList.sortWith(compareBy({ it.date }, { it.time }))
 
                     appointmentList.removeAllViews()

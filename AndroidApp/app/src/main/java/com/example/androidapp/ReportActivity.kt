@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.os.Environment
 import android.text.Html
 import android.util.Log
+import android.view.MenuItem
 import android.view.View
 import android.widget.Button
 import android.widget.ProgressBar
@@ -12,6 +13,7 @@ import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import com.example.androidapp.api.RetrofitClient
 import com.example.androidapp.models.ReportRequest
 import com.example.androidapp.models.ReportResponse
@@ -36,6 +38,13 @@ class ReportActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_report)
 
+        val toolbar: Toolbar = findViewById(R.id.toolbar)
+        setSupportActionBar(toolbar)
+        supportActionBar?.apply {
+            setDisplayHomeAsUpEnabled(true)
+            setHomeAsUpIndicator(R.drawable.ic_arrow_back)
+        }
+
         progressBar = findViewById(R.id.progressBar)
         scrollViewReport = findViewById(R.id.scrollViewReport)
         textViewReport = findViewById(R.id.textViewReport)
@@ -58,6 +67,16 @@ class ReportActivity : AppCompatActivity() {
 
         buttonDownloadPdf.setOnClickListener {
             downloadReportAsPdf(patientName)
+        }
+    }
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            android.R.id.home -> {
+                onBackPressedDispatcher.onBackPressed()
+                true
+            }
+
+            else -> super.onOptionsItemSelected(item)
         }
     }
 

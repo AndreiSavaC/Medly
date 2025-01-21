@@ -1,10 +1,12 @@
 package com.example.androidapp
 
 import android.os.Bundle
+import android.view.MenuItem
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import com.example.androidapp.api.RetrofitClient
 import com.example.androidapp.models.UserRequest
 import com.example.androidapp.models.UserResponse
@@ -31,7 +33,13 @@ class EditProfileActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_edit_profile)
 
-        // Initialize views
+        val toolbar: Toolbar = findViewById(R.id.toolbar)
+        setSupportActionBar(toolbar)
+        supportActionBar?.apply {
+            setDisplayHomeAsUpEnabled(true)
+            setHomeAsUpIndicator(R.drawable.ic_arrow_back)
+        }
+
         editTextFirstName = findViewById(R.id.editTextName)
         editTextLastName = findViewById(R.id.editTextSurname)
         editTextEmail = findViewById(R.id.editTextEmail)
@@ -49,6 +57,17 @@ class EditProfileActivity : AppCompatActivity() {
 
         btnSave.setOnClickListener { saveUserChanges() }
         btnCancel.setOnClickListener { finish() }
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            android.R.id.home -> {
+                onBackPressedDispatcher.onBackPressed()
+                true
+            }
+
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 
     private fun loadUserData() {
