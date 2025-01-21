@@ -25,11 +25,7 @@ class UserServiceImpl : UserService {
         if (user.id == null) {
             throw IllegalArgumentException("User ID cannot be null for update operation")
         }
-        if (user.keycloakId == null) {
-            throw IllegalArgumentException("User Keycloak ID cannot be null for update operation")
-        }
         UsersTable.update({ UsersTable.id eq user.id }) {
-            it[keycloakId] = user.keycloakId
             it[firstName] = user.firstName
             it[lastName] = user.lastName
             it[email] = user.email

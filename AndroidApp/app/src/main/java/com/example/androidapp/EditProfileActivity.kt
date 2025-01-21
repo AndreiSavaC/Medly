@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.androidapp.api.RetrofitClient
 import com.example.androidapp.models.UserRequest
 import com.example.androidapp.models.UserResponse
+import com.example.androidapp.models.UserUpdateRequest
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -75,7 +76,8 @@ class EditProfileActivity : AppCompatActivity() {
     }
 
     private fun saveUserChanges() {
-        val updatedUser = UserRequest(
+        val updatedUser = UserUpdateRequest(
+            id = userId,
             firstName = editTextFirstName.text.toString(),
             lastName = editTextLastName.text.toString(),
             email = editTextEmail.text.toString(),
@@ -95,7 +97,7 @@ class EditProfileActivity : AppCompatActivity() {
                         Toast.makeText(this@EditProfileActivity, "Profile updated successfully!", Toast.LENGTH_SHORT).show()
                         finish()
                     } else {
-                        Toast.makeText(this@EditProfileActivity, "Failed to update profile.", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@EditProfileActivity, "Failed to update profile."+response.message(), Toast.LENGTH_SHORT).show()
                     }
                 }
 

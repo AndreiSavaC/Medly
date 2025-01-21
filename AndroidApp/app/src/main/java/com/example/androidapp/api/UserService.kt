@@ -2,6 +2,7 @@ package com.example.androidapp.api
 
 import com.example.androidapp.models.UserRequest
 import com.example.androidapp.models.UserResponse
+import com.example.androidapp.models.UserUpdateRequest
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -24,6 +25,7 @@ interface UserService {
     @GET("users/{id}")
     fun getUserById(@Path("id") id: Int): Call<UserResponse>
 
+    @Headers("Content-Type: application/json")
     @PUT("users/{id}")
-    fun updateUser(@Path("id") id: Int, @Body user: UserRequest): Call<Void>
+    fun updateUser(@Path("id") id: Int, @Body user: UserUpdateRequest): Call<Void>
 }
