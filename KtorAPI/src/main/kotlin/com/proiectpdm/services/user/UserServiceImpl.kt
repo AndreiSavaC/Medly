@@ -3,7 +3,6 @@ package com.proiectpdm.services.user
 import com.proiectpdm.models.User
 import com.proiectpdm.models.UsersTable
 import com.proiectpdm.models.UsersTable.keycloakId
-import com.proiectpdm.plugins.dbQuery
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction

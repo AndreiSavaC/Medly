@@ -1,7 +1,7 @@
 package com.proiectpdm.routers.appointments
 
-import com.proiectpdm.services.appointment.AppointmentService
 import com.proiectpdm.models.Appointment
+import com.proiectpdm.services.appointment.AppointmentService
 import io.ktor.http.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
@@ -106,7 +106,7 @@ fun Routing.appointmentRoutes(
 
         post {
             val appointment = call.receive<Appointment>()
-            // Parse and validate the date
+
             val adjustedDate = try {
                 val dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy")
                 LocalDate.parse(appointment.date, dateFormatter)
@@ -114,13 +114,13 @@ fun Routing.appointmentRoutes(
                 call.respond(HttpStatusCode.BadRequest, "Invalid date format. Please use dd-MM-yyyy.")
                 return@post
             }
-            // Ensure the appointment is not on a weekend
+
             val dayOfWeek = adjustedDate.dayOfWeek
             if (dayOfWeek == DayOfWeek.SATURDAY || dayOfWeek == DayOfWeek.SUNDAY) {
                 call.respond(HttpStatusCode.BadRequest, "Appointments cannot be created on Saturdays or Sundays.")
                 return@post
             }
-            // Validate time
+
             if (!isDateTimeValid(appointment.date, appointment.time)) {
                 call.respond(
                     HttpStatusCode.BadRequest,
@@ -128,11 +128,11 @@ fun Routing.appointmentRoutes(
                 )
                 return@post
             }
-            // Format date and create a copy of the appointment
+
             val updatedAppointment = appointment.copy(
                 date = adjustedDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))
             )
-            // Check for conflicting appointments
+
             val existingAppointments = appointmentService.getAppointmentsByDoctorIdAndDate(
                 updatedAppointment.doctorId, updatedAppointment.date
             )
@@ -143,7 +143,6 @@ fun Routing.appointmentRoutes(
                 )
                 return@post
             }
-            // Add the appointment
             appointmentService.addAppointment(updatedAppointment)?.let {
                 call.respond(HttpStatusCode.Created, it)
             } ?: call.respond(HttpStatusCode.BadRequest, "Error adding appointment.")

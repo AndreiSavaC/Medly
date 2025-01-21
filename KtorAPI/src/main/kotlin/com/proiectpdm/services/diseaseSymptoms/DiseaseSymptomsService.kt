@@ -7,6 +7,6 @@ interface DiseaseSymptomsService {
     suspend fun getSymptomById(id: Int): DiseaseSymptom?
     suspend fun getSymptomsByCategory(id: Int): List<DiseaseSymptom>
     suspend fun addSymptom(symptom: DiseaseSymptom): DiseaseSymptom?
-    suspend fun updateSymptom(id:Int, symptoms: DiseaseSymptom): Boolean
+    suspend fun updateSymptom(id: Int, symptoms: DiseaseSymptom): Boolean
     suspend fun deleteSymptom(id: Int): Boolean
 }

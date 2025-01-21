@@ -1,12 +1,11 @@
 package com.proiectpdm.routers.diseaseCategories
 
-import com.proiectpdm.services.diseaseCategories.DiseaseCategoriesService
 import com.proiectpdm.models.DiseaseCategory
-import com.proiectpdm.models.Insurance
+import com.proiectpdm.services.diseaseCategories.DiseaseCategoriesService
 import io.ktor.http.*
 import io.ktor.server.request.*
-import io.ktor.server.routing.*
 import io.ktor.server.response.*
+import io.ktor.server.routing.*
 
 
 fun Routing.diseaseCategoriesRoutes(diseaseCategoriesService: DiseaseCategoriesService) {

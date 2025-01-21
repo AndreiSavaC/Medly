@@ -1,6 +1,7 @@
 package com.proiectpdm.services.diseaseCategories
 
-import com.proiectpdm.models.*
+import com.proiectpdm.models.DiseaseCategoriesTable
+import com.proiectpdm.models.DiseaseCategory
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -12,8 +13,8 @@ class DiseaseCategoriesServiceImpl : DiseaseCategoriesService {
     }
 
     override suspend fun getCategoryById(id: Int): DiseaseCategory? = transaction {
-        DiseaseCategoriesTable.selectAll().where(DiseaseCategoriesTable.id eq id)
-           .singleOrNull()?.let { resultRowToCategory(it) }
+        DiseaseCategoriesTable.selectAll().where(DiseaseCategoriesTable.id eq id).singleOrNull()
+            ?.let { resultRowToCategory(it) }
     }
 
     override suspend fun addCategory(category: DiseaseCategory): DiseaseCategory? = transaction {
@@ -29,7 +30,7 @@ class DiseaseCategoriesServiceImpl : DiseaseCategoriesService {
         } > 0
     }
 
-    override suspend fun deleteCategory(id: Int) : Boolean = transaction {
+    override suspend fun deleteCategory(id: Int): Boolean = transaction {
         DiseaseCategoriesTable.deleteWhere { DiseaseCategoriesTable.id eq id } > 0
     }
 

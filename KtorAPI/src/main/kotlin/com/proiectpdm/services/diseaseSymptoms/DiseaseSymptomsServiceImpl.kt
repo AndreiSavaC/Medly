@@ -1,6 +1,7 @@
 package com.proiectpdm.services.diseaseSymptoms
 
-import com.proiectpdm.models.*
+import com.proiectpdm.models.DiseaseSymptom
+import com.proiectpdm.models.DiseaseSymptomsTable
 import com.proiectpdm.plugins.dbQuery
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq

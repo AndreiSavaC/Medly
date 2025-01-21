@@ -1,8 +1,8 @@
 package com.proiectpdm.routers.user
 
-import com.proiectpdm.services.user.UserService
-import com.proiectpdm.services.keycloak.KeycloakService
 import com.proiectpdm.models.User
+import com.proiectpdm.services.keycloak.KeycloakService
+import com.proiectpdm.services.user.UserService
 import io.ktor.http.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*

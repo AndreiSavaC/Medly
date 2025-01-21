@@ -1,12 +1,11 @@
 package com.proiectpdm.routers.diseaseSymptoms
 
-import com.proiectpdm.services.diseaseCategories.DiseaseCategoriesService
-import com.proiectpdm.services.diseaseSymptoms.DiseaseSymptomsService
 import com.proiectpdm.models.DiseaseSymptom
+import com.proiectpdm.services.diseaseSymptoms.DiseaseSymptomsService
 import io.ktor.http.*
 import io.ktor.server.request.*
-import io.ktor.server.routing.*
 import io.ktor.server.response.*
+import io.ktor.server.routing.*
 
 
 fun Routing.diseaseSymptomsRoutes(
