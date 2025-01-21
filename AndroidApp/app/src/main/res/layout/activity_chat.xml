@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/backgroundColor">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/mainRed"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+            app:layout_constraintTop_toTopOf="parent"
+            app:title="Chat AI" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewConversation"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:padding="8dp"
+        android:clipToPadding="false"
+        android:scrollbars="vertical"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="8dp"
+        android:background="@color/inputBackgroundColor">
+
+        <EditText
+            android:id="@+id/editTextUserInput"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:fontFamily="@font/montserrat_bold"
+            android:hint="Scrie un mesaj..."
+            android:background="@drawable/edittext_background"
+            android:padding="10dp"
+            android:inputType="text"
+            android:imeOptions="actionSend" />
+
+        <ImageButton
+            android:id="@+id/buttonSend"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="8dp"
+            android:background="@drawable/send_button_background"
+            android:contentDescription="Trimite"
+            android:src="@drawable/ic_send"
+            android:scaleType="centerInside"
+            app:tint="@color/white" />
+    </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/progressBarLoading"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:visibility="gone"
+        android:layout_gravity="center" />
+
+</LinearLayout>

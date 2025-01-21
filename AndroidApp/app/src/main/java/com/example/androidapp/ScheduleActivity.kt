@@ -38,11 +38,6 @@ class ScheduleActivity : AppCompatActivity() {
         }
 
 
-        if (supportActionBar != null) {
-            supportActionBar?.setDisplayHomeAsUpEnabled(true)
-            supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_arrow_back)
-        }
-
         weekRangeTextView = findViewById(R.id.txtWeekRange)
         weekCalendar = findViewById(R.id.weekCalendar)
         hourListContainer = findViewById(R.id.hourListContainer)

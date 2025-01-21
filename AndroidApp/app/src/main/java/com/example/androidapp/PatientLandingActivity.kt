@@ -56,6 +56,11 @@ class PatientLandingActivity : AppCompatActivity() {
             startActivity(Intent(this, ScheduleActivity::class.java))
         }
 
+        val btnDoctorAI = findViewById<Button>(R.id.btnDoctorAI)
+        btnDoctorAI.setOnClickListener {
+            startActivity(Intent(this, ChatActivity::class.java))
+        }
+
         appointmentList = findViewById(R.id.appointment_list)
     }
 

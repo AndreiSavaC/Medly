@@ -37,4 +37,12 @@ object RetrofitClient {
             .build()
             .create(ReportService::class.java)
     }
+
+    val chatService: ChatService by lazy {
+        Retrofit.Builder()
+            .baseUrl(FLASK_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(ChatService::class.java)
+    }
 }
