@@ -15,7 +15,6 @@ import com.example.androidapp.api.RetrofitClient
 import com.example.androidapp.models.Appointment
 import com.example.androidapp.models.AppointmentResponse
 import com.example.androidapp.models.UserResponse
-import org.w3c.dom.Text
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -40,7 +39,7 @@ class DoctorLandingActivity : AppCompatActivity() {
         doctorId = sharedPreferences.getInt("PATIENT_ID", -1)
         val userFirstName: String? = sharedPreferences.getString("FIRST_NAME", "")
         val userLastName: String? = sharedPreferences.getString("LAST_NAME", "")
-
+        appointmentsList.clear()
         if (doctorId == -1) {
             Toast.makeText(this, "Doctor ID not found.", Toast.LENGTH_LONG).show()
             startActivity(Intent(this, LoginActivity::class.java))
@@ -77,12 +76,12 @@ class DoctorLandingActivity : AppCompatActivity() {
             today.get(Calendar.MONTH) + 1,
             today.get(Calendar.YEAR)
         )
-        fetchAppointments(todayDate)
 
         datePicker.minDate = today.timeInMillis
     }
 
     private fun fetchAppointments(date: String) {
+        appointmentsList.clear()
         if (doctorId == -1) {
             Toast.makeText(this, "Doctor ID invalid.", Toast.LENGTH_LONG).show()
             return
@@ -90,6 +89,7 @@ class DoctorLandingActivity : AppCompatActivity() {
 
         appointmentList.removeAllViews()
         txtNoAppointments.visibility = View.GONE
+        appointmentsList.clear()
 
         RetrofitClient.appointmentService.getAppointmentsByDoctorId(doctorId, date)
             .enqueue(object : Callback<List<AppointmentResponse>> {
@@ -137,6 +137,7 @@ class DoctorLandingActivity : AppCompatActivity() {
     }
 
     private fun fetchPatientDetails(appointmentResponses: List<AppointmentResponse>) {
+        appointmentsList.clear()
         val totalAppointments = appointmentResponses.size
         var processedAppointments = 0
 
@@ -144,6 +145,9 @@ class DoctorLandingActivity : AppCompatActivity() {
             processedAppointments++
             if (processedAppointments == totalAppointments) {
                 runOnUiThread {
+                    // Sort appointments by date and time
+                    appointmentsList.sortWith(compareBy({ it.date }, { it.time }))
+
                     appointmentList.removeAllViews()
                     for (appointment in appointmentsList) {
                         val appointmentContainer = LinearLayout(this@DoctorLandingActivity).apply {
