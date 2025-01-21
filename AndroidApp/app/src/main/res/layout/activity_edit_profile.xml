@@ -1,37 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".EditProfileActivity">
 
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="@color/mainRed"
-        android:fontFamily="@font/montserrat"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-        app:layout_constraintTop_toTopOf="parent"
-        app:title="Editează profil" />
-
     <ScrollView
-        android:layout_width="410dp"
-        android:layout_height="671dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar">
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingLeft="16dp"
-            android:paddingRight="16dp">
+            android:padding="16dp">
 
-            <!-- Name -->
+            <TextView
+                android:id="@+id/textViewTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Edit Profile"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:layout_marginBottom="16dp" />
+
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -43,31 +37,29 @@
                 android:id="@+id/editTextName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Introduceți numele" />
+                android:hint="Introduceti numele" />
 
-            <!-- Surname -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
                 android:text="Prenume"
                 android:textSize="16sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:layout_marginTop="8dp" />
 
             <EditText
                 android:id="@+id/editTextSurname"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Introduceți prenume" />
+                android:hint="Introduceti prenume" />
 
-            <!-- Email -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
                 android:text="Email"
                 android:textSize="16sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:layout_marginTop="8dp" />
 
             <EditText
                 android:id="@+id/editTextEmail"
@@ -75,14 +67,13 @@
                 android:layout_height="wrap_content"
                 android:hint="Introduceti email" />
 
-            <!-- Gender -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
                 android:text="Sex"
                 android:textSize="16sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:layout_marginTop="8dp" />
 
             <EditText
                 android:id="@+id/editTextGender"
@@ -90,14 +81,13 @@
                 android:layout_height="wrap_content"
                 android:hint="Introduceti sexul" />
 
-            <!-- Date of Birth -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
                 android:text="Data nasterii"
                 android:textSize="16sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:layout_marginTop="8dp" />
 
             <EditText
                 android:id="@+id/editTextBirthDate"
@@ -105,14 +95,13 @@
                 android:layout_height="wrap_content"
                 android:hint="Introduceti data nasterii (YYYY-MM-DD)" />
 
-            <!-- Height -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
                 android:text="Inaltime (cm)"
                 android:textSize="16sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:layout_marginTop="8dp" />
 
             <EditText
                 android:id="@+id/editTextHeight"
@@ -120,14 +109,13 @@
                 android:layout_height="wrap_content"
                 android:hint="Introduceti inaltimea" />
 
-            <!-- Weight -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
                 android:text="Greutate (kg)"
                 android:textSize="16sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:layout_marginTop="8dp" />
 
             <EditText
                 android:id="@+id/editTextWeight"
@@ -135,21 +123,19 @@
                 android:layout_height="wrap_content"
                 android:hint="Introduceti greutatea" />
 
-            <!-- Action Buttons -->
-
             <Button
                 android:id="@+id/btnSave"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="Salveaza modificarile" />
+                android:text="Salveaza modificarile"
+                android:layout_marginTop="16dp" />
 
             <Button
                 android:id="@+id/btnCancel"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="Anuleaza" />
+                android:text="Anuleaza"
+                android:layout_marginTop="8dp" />
 
         </LinearLayout>
     </ScrollView>
