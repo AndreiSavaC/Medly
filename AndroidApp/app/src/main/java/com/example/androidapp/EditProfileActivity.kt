@@ -1,10 +1,12 @@
 package com.example.androidapp
 
 import android.os.Bundle
+import android.view.MenuItem
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import com.example.androidapp.api.RetrofitClient
 import com.example.androidapp.models.UserRequest
 import com.example.androidapp.models.UserResponse
@@ -31,7 +33,13 @@ class EditProfileActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_edit_profile)
 
-        // Initialize views
+        val toolbar: Toolbar = findViewById(R.id.toolbar)
+        setSupportActionBar(toolbar)
+        supportActionBar?.apply {
+            setDisplayHomeAsUpEnabled(true)
+            setHomeAsUpIndicator(R.drawable.ic_arrow_back)
+        }
+
         editTextFirstName = findViewById(R.id.editTextName)
         editTextLastName = findViewById(R.id.editTextSurname)
         editTextEmail = findViewById(R.id.editTextEmail)
@@ -51,6 +59,17 @@ class EditProfileActivity : AppCompatActivity() {
         btnCancel.setOnClickListener { finish() }
     }
 
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            android.R.id.home -> {
+                onBackPressedDispatcher.onBackPressed()
+                true
+            }
+
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
     private fun loadUserData() {
         RetrofitClient.userService.getUserById(userId).enqueue(object : Callback<UserResponse> {
             override fun onResponse(call: Call<UserResponse>, response: Response<UserResponse>) {
@@ -65,7 +84,7 @@ class EditProfileActivity : AppCompatActivity() {
                         editTextWeight.setText(user.weight.toString())
                     }
                 } else {
-                    Toast.makeText(this@EditProfileActivity, "Failed to load user data.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@EditProfileActivity, "Eroare la încărcarea datelor utilizatorului.", Toast.LENGTH_SHORT).show()
                 }
             }
 
@@ -94,10 +113,10 @@ class EditProfileActivity : AppCompatActivity() {
             .enqueue(object : Callback<Void> {
                 override fun onResponse(call: Call<Void>, response: Response<Void>) {
                     if (response.isSuccessful) {
-                        Toast.makeText(this@EditProfileActivity, "Profile updated successfully!", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@EditProfileActivity, "Profil actualizat cu succes!", Toast.LENGTH_SHORT).show()
                         finish()
                     } else {
-                        Toast.makeText(this@EditProfileActivity, "Failed to update profile."+response.message(), Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@EditProfileActivity, "Eroare la actualizarea profilului."+response.message(), Toast.LENGTH_SHORT).show()
                     }
                 }
 
