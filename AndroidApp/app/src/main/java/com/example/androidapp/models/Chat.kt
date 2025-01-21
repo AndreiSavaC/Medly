@@ -5,6 +5,6 @@ data class ChatRequest(
 )
 
 data class ChatResponse(
-    val reply: String?,
+    val message: String?,
     val error: String?
 )

@@ -1,15 +1,16 @@
 package com.example.androidapp
 
 import android.os.Bundle
+import android.util.Log
 import android.view.KeyEvent
 import android.view.MenuItem
-import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.androidapp.MessageAdapter
 import com.example.androidapp.api.RetrofitClient
 import com.example.androidapp.models.ChatRequest
 import com.example.androidapp.models.ChatResponse
@@ -17,6 +18,7 @@ import com.example.androidapp.models.Message
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import android.view.View
 
 class ChatActivity : AppCompatActivity() {
 
@@ -53,6 +55,7 @@ class ChatActivity : AppCompatActivity() {
             this.scrollToPosition(messageAdapter.itemCount - 1)
         }
 
+        // Allow sending message via keyboard "Send" button
         editTextUserInput.setOnEditorActionListener { _, actionId, event ->
             if (actionId == EditorInfo.IME_ACTION_SEND || event?.keyCode == KeyEvent.KEYCODE_ENTER) {
                 buttonSend.performClick()
@@ -65,15 +68,10 @@ class ChatActivity : AppCompatActivity() {
         buttonSend.setOnClickListener {
             val userMessage = editTextUserInput.text.toString().trim()
             if (userMessage.isNotEmpty()) {
-                val userMsg = Message(content = userMessage, isUser = true)
-                messageAdapter.addMessage(userMsg)
-                recyclerViewConversation.scrollToPosition(messages.size - 1)
-
-                editTextUserInput.setText("")
-
                 sendChatMessageToServer(userMessage)
+                editTextUserInput.setText("")
             } else {
-                Toast.makeText(this, "Te rog să introduci un mesaj", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Please enter a message", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -88,46 +86,77 @@ class ChatActivity : AppCompatActivity() {
         }
     }
 
-    private fun sendChatMessageToServer(message: String) {
+    private fun sendChatMessageToServer(currentMessage: String) {
+        // Add the user's message to the messages list
+        val userMsg = Message(content = currentMessage, isUser = true)
+        messages.add(userMsg)
+
+        // Build the conversation string
+        val conversationBuilder = StringBuilder()
+        for (msg in messages) {
+            if (msg.isUser) {
+                conversationBuilder.append("You: ${msg.content}\n")
+            } else {
+                conversationBuilder.append("AI: ${msg.content}\n")
+            }
+        }
+        val conversation = conversationBuilder.toString().trim()
+
+        Log.d("ChatActivityLOG", "Sending conversation:\n$conversation")
+
         progressBar.visibility = View.VISIBLE
 
-        val chatRequest = ChatRequest(message)
+        val chatRequest = ChatRequest(conversation)
 
         chatService.sendChatMessage(chatRequest).enqueue(object : Callback<ChatResponse> {
             override fun onResponse(call: Call<ChatResponse>, response: Response<ChatResponse>) {
                 progressBar.visibility = View.GONE
+                Log.d("ChatActivityLOG", "Response received: ${response.raw()}")
 
                 if (response.isSuccessful) {
                     val chatResponse = response.body()
+                    Log.d("ChatActivityLOG", "Parsed response: $chatResponse")
+
                     if (chatResponse != null) {
-                        if (chatResponse.reply != null) {
-                            val aiMsg = Message(content = chatResponse.reply, isUser = false)
-                            messageAdapter.addMessage(aiMsg)
+                        if (!chatResponse.message.isNullOrEmpty()) {
+                            val aiMsg = Message(content = chatResponse.message, isUser = false)
+                            messages.add(aiMsg)
+
+                            messageAdapter.notifyItemInserted(messages.size - 1)
                             recyclerViewConversation.scrollToPosition(messages.size - 1)
                         } else {
-                            val errorMsg = chatResponse.error ?: "Eroare necunoscută"
-                            val errorMessage = Message(content = "Eroare: $errorMsg", isUser = false)
-                            messageAdapter.addMessage(errorMessage)
+                            val errorMsg = chatResponse.error ?: "Unknown error"
+                            Log.e("ChatActivityLOG", "Error from server: $errorMsg")
+                            val errorMessage = Message(content = "Error: $errorMsg", isUser = false)
+                            messages.add(errorMessage)
+                            messageAdapter.notifyItemInserted(messages.size - 1)
                             recyclerViewConversation.scrollToPosition(messages.size - 1)
                         }
                     } else {
-                        val errorMessage = Message(content = "Eroare: Răspunsul de la server este gol.", isUser = false)
-                        messageAdapter.addMessage(errorMessage)
+                        Log.e("ChatActivityLOG", "Response body is null!")
+                        val errorMessage = Message(content = "Error: Empty response from server.", isUser = false)
+                        messages.add(errorMessage)
+                        messageAdapter.notifyItemInserted(messages.size - 1)
                         recyclerViewConversation.scrollToPosition(messages.size - 1)
                     }
                 } else {
-                    val errorMessage = Message(content = "Eroare server: ${response.message()}", isUser = false)
-                    messageAdapter.addMessage(errorMessage)
+                    Log.e("ChatActivityLOG", "Server error: ${response.code()} - ${response.message()}")
+                    val errorMessage = Message(content = "Server error: ${response.code()} - ${response.message()}", isUser = false)
+                    messages.add(errorMessage)
+                    messageAdapter.notifyItemInserted(messages.size - 1)
                     recyclerViewConversation.scrollToPosition(messages.size - 1)
                 }
             }
 
             override fun onFailure(call: Call<ChatResponse>, t: Throwable) {
                 progressBar.visibility = View.GONE
-                val failureMessage = Message(content = "Eroare de rețea: ${t.message}", isUser = false)
-                messageAdapter.addMessage(failureMessage)
+                Log.e("ChatActivityLOG", "Network failure: ${t.message}", t)
+                val failureMessage = Message(content = "Network error: ${t.message}", isUser = false)
+                messages.add(failureMessage)
+                messageAdapter.notifyItemInserted(messages.size - 1)
                 recyclerViewConversation.scrollToPosition(messages.size - 1)
             }
         })
     }
+
 }
