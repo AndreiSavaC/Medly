@@ -91,7 +91,7 @@ def generate_patient_report():
 
         return jsonify(
             {
-                "report": patient_recommendations,
+                "message": patient_recommendations,
             }
         )
     except Exception as e:
