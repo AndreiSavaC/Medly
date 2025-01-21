@@ -33,9 +33,7 @@ class ConfirmAppointmentActivity : AppCompatActivity() {
 
         if (patientId == -1 || doctorId == -1) {
             Toast.makeText(
-                this,
-                "Eroare: Informațiile utilizatorului sunt lipsă.",
-                Toast.LENGTH_LONG
+                this, "Eroare: Informațiile utilizatorului sunt lipsă.", Toast.LENGTH_LONG
             ).show()
             finish()
             return
@@ -118,64 +116,57 @@ class ConfirmAppointmentActivity : AppCompatActivity() {
         if (doctorId == -1) {
             doctorTextView.text = "Doctor: N/A"
             Toast.makeText(
-                this,
-                "Eroare: ID-ul doctorului este invalid.",
-                Toast.LENGTH_LONG
+                this, "Eroare: ID-ul doctorului este invalid.", Toast.LENGTH_LONG
             ).show()
             return
         }
 
-        RetrofitClient.userService.getUserById(doctorId)
-            .enqueue(object : Callback<UserResponse> {
-                override fun onResponse(
-                    call: Call<UserResponse>,
-                    response: Response<UserResponse>
-                ) {
-                    if (response.isSuccessful) {
-                        val user = response.body()
-                        if (user != null) {
-                            val fullName = "${user.firstName} ${user.lastName}"
-                            doctorTextView.text = "Doctor: $fullName"
-                        } else {
-                            doctorTextView.text = "Doctor: N/A"
-                            Toast.makeText(
-                                this@ConfirmAppointmentActivity,
-                                "Eroare: Nu s-a găsit doctorul.",
-                                Toast.LENGTH_LONG
-                            ).show()
-                        }
+        RetrofitClient.userService.getUserById(doctorId).enqueue(object : Callback<UserResponse> {
+            override fun onResponse(
+                call: Call<UserResponse>, response: Response<UserResponse>
+            ) {
+                if (response.isSuccessful) {
+                    val user = response.body()
+                    if (user != null) {
+                        val fullName = "${user.firstName} ${user.lastName}"
+                        doctorTextView.text = "Doctor: $fullName"
                     } else {
                         doctorTextView.text = "Doctor: N/A"
                         Toast.makeText(
                             this@ConfirmAppointmentActivity,
-                            "Eroare la încărcarea datelor doctorului: ${response.message()}",
+                            "Eroare: Nu s-a găsit doctorul.",
                             Toast.LENGTH_LONG
                         ).show()
-                        Log.e(
-                            "ConfirmAppointment",
-                            "Eroare la API: ${response.errorBody()?.string()}"
-                        )
                     }
-                }
-
-                override fun onFailure(call: Call<UserResponse>, t: Throwable) {
+                } else {
                     doctorTextView.text = "Doctor: N/A"
                     Toast.makeText(
                         this@ConfirmAppointmentActivity,
-                        "Eroare de rețea: ${t.message}",
+                        "Eroare la încărcarea datelor doctorului: ${response.message()}",
                         Toast.LENGTH_LONG
                     ).show()
-                    Log.e("ConfirmAppointment", "Eroare de rețea", t)
+                    Log.e(
+                        "ConfirmAppointment", "Eroare la API: ${response.errorBody()?.string()}"
+                    )
                 }
-            })
+            }
+
+            override fun onFailure(call: Call<UserResponse>, t: Throwable) {
+                doctorTextView.text = "Doctor: N/A"
+                Toast.makeText(
+                    this@ConfirmAppointmentActivity,
+                    "Eroare de rețea: ${t.message}",
+                    Toast.LENGTH_LONG
+                ).show()
+                Log.e("ConfirmAppointment", "Eroare de rețea", t)
+            }
+        })
     }
 
     private fun scheduleAppointment(date: String, time: String, symptoms: List<String>) {
         if (patientId == -1 || doctorId == -1) {
             Toast.makeText(
-                this,
-                "Eroare: Informațiile utilizatorului sunt lipsă.",
-                Toast.LENGTH_LONG
+                this, "Eroare: Informațiile utilizatorului sunt lipsă.", Toast.LENGTH_LONG
             ).show()
             return
         }
@@ -191,8 +182,7 @@ class ConfirmAppointmentActivity : AppCompatActivity() {
         RetrofitClient.appointmentService.createAppointment(appointmentRequest)
             .enqueue(object : Callback<ResponseBody> {
                 override fun onResponse(
-                    call: Call<ResponseBody>,
-                    response: Response<ResponseBody>
+                    call: Call<ResponseBody>, response: Response<ResponseBody>
                 ) {
                     if (response.isSuccessful) {
                         Toast.makeText(
@@ -202,8 +192,7 @@ class ConfirmAppointmentActivity : AppCompatActivity() {
                         ).show()
 
                         val intent = Intent(
-                            this@ConfirmAppointmentActivity,
-                            PatientLandingActivity::class.java
+                            this@ConfirmAppointmentActivity, PatientLandingActivity::class.java
                         )
 
                         intent.flags =

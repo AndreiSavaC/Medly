@@ -25,8 +25,8 @@ class MessageAdapter(private val messages: MutableList<Message>) :
                 .inflate(R.layout.item_message_user, parent, false)
             return UserMessageViewHolder(view)
         } else {
-            val view = LayoutInflater.from(parent.context)
-                .inflate(R.layout.item_message_ai, parent, false)
+            val view =
+                LayoutInflater.from(parent.context).inflate(R.layout.item_message_ai, parent, false)
             return AIMessageViewHolder(view)
         }
     }

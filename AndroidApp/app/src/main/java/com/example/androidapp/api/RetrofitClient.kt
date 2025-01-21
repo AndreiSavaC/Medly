@@ -23,26 +23,17 @@ object RetrofitClient {
     }
 
     val symptomService: SymptomService by lazy {
-        Retrofit.Builder()
-            .baseUrl(BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-            .create(SymptomService::class.java)
+        Retrofit.Builder().baseUrl(BASE_URL).addConverterFactory(GsonConverterFactory.create())
+            .build().create(SymptomService::class.java)
     }
 
     val reportService: ReportService by lazy {
-        Retrofit.Builder()
-            .baseUrl(FLASK_URL)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-            .create(ReportService::class.java)
+        Retrofit.Builder().baseUrl(FLASK_URL).addConverterFactory(GsonConverterFactory.create())
+            .build().create(ReportService::class.java)
     }
 
     val chatService: ChatService by lazy {
-        Retrofit.Builder()
-            .baseUrl(FLASK_URL)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-            .create(ChatService::class.java)
+        Retrofit.Builder().baseUrl(FLASK_URL).addConverterFactory(GsonConverterFactory.create())
+            .build().create(ChatService::class.java)
     }
 }

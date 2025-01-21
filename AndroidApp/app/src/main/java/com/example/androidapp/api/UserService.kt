@@ -1,4 +1,3 @@
-// File: com/example/androidapp/api/UserService.kt
 package com.example.androidapp.api
 
 import com.example.androidapp.models.UserRequest
@@ -15,8 +14,7 @@ interface UserService {
     @POST("/users")
     @Headers("Content-Type: application/json")
     fun createUser(
-        @Body user: UserRequest,
-        @Header("X-User-Password") password: String
+        @Body user: UserRequest, @Header("X-User-Password") password: String
     ): Call<UserResponse>
 
     @GET("users/keycloak/{id}")

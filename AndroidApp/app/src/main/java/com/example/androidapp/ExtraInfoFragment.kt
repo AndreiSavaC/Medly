@@ -25,59 +25,47 @@ class ExtraInfoFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            @Suppress("DEPRECATION")
-            partialUserInfo = it.getParcelable("partialUserInfo")
+            @Suppress("DEPRECATION") partialUserInfo = it.getParcelable("partialUserInfo")
         }
     }
 
     private fun createAccount(
-        partialUserInfo: Insurance,
-        email: String,
-        password: String,
-        weight: Float,
-        height: Int
+        partialUserInfo: Insurance, email: String, password: String, weight: Float, height: Int
     ): Boolean {
-        // Create the UserRequest object
         val userRequest = UserRequest(
             firstName = partialUserInfo.firstName,
             lastName = partialUserInfo.lastName,
             email = email,
             gender = partialUserInfo.gender,
-            height = height.toFloat(), // Assuming height is an Int
+            height = height.toFloat(),
             weight = weight,
-            birthday = partialUserInfo.birthday,  // Assuming birthday is a String
+            birthday = partialUserInfo.birthday,
             doctorId = partialUserInfo.doctorId,
-            isDoctor = false, // You can adjust this based on your logic
-            isAdmin = false,  // Adjust if needed
+            isDoctor = false,
+            isAdmin = false,
         )
 
-        // Make the POST request using Retrofit
         RetrofitClient.userService.createUser(userRequest, password)
             .enqueue(object : Callback<UserResponse> {
                 override fun onResponse(
-                    call: Call<UserResponse>,
-                    response: Response<UserResponse>
+                    call: Call<UserResponse>, response: Response<UserResponse>
                 ) {
                     if (response.isSuccessful) {
-                        // Handle success
                         val createdUser = response.body()
                         if (createdUser != null) {
-                            // Successfully created the user, you can handle the response
                             Log.d("CreateAccount", "User created successfully: $createdUser")
                         }
                     } else {
-                        // Handle failure, perhaps the user already exists or invalid data
                         Log.e("CreateAccount", "Error: ${response.errorBody()?.string()}")
                     }
                 }
 
                 override fun onFailure(call: Call<UserResponse>, t: Throwable) {
-                    // Handle failure (network error, etc.)
                     Log.e("CreateAccount", "Error: ${t.message}")
                 }
             })
 
-        return true  // You can return true or false based on whether you want to return something directly
+        return true
     }
 
     override fun onCreateView(
@@ -107,11 +95,7 @@ class ExtraInfoFragment : Fragment() {
                         if (password.length > 7) {
                             if (email.contains("@")) {
                                 if (createAccount(
-                                        partialUserInfo!!,
-                                        email,
-                                        password,
-                                        userWeight,
-                                        userHeight
+                                        partialUserInfo!!, email, password, userWeight, userHeight
                                     )
                                 ) {
                                     Toast.makeText(
@@ -119,8 +103,7 @@ class ExtraInfoFragment : Fragment() {
                                         "Contul a fost creat cu succes.",
                                         Toast.LENGTH_SHORT
                                     ).show()
-                                    val intent =
-                                        Intent(requireContext(), LoginActivity::class.java)
+                                    val intent = Intent(requireContext(), LoginActivity::class.java)
                                     startActivity(intent)
                                     requireActivity().finish()
                                 }
@@ -150,9 +133,7 @@ class ExtraInfoFragment : Fragment() {
                 }
             } else {
                 Toast.makeText(
-                    requireContext(),
-                    "Toate campurile trebuie completate.",
-                    Toast.LENGTH_SHORT
+                    requireContext(), "Toate campurile trebuie completate.", Toast.LENGTH_SHORT
                 ).show()
             }
         }

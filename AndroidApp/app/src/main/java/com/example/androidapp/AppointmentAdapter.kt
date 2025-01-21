@@ -1,4 +1,3 @@
-// File: com/example/androidapp/AppointmentAdapter.kt
 package com.example.androidapp
 
 import android.view.LayoutInflater
@@ -9,28 +8,25 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.androidapp.models.Appointment
 
 class AppointmentAdapter(
-    private val appointments: List<Appointment>,
-    private val onItemClick: (Appointment) -> Unit
+    private val appointments: List<Appointment>, private val onItemClick: (Appointment) -> Unit
 ) : RecyclerView.Adapter<AppointmentAdapter.ViewHolder>() {
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val textViewPatientName: TextView = itemView.findViewById(R.id.textViewPatientName)
         val textViewDate: TextView = itemView.findViewById(R.id.textViewDate)
         val textViewTime: TextView = itemView.findViewById(R.id.textViewTime)
-        // Eliminat TextView pentru simptome
 
         fun bind(appointment: Appointment) {
             textViewPatientName.text = appointment.patientName
             textViewDate.text = appointment.date
             textViewTime.text = appointment.time
-            // Eliminat legarea simptomelor
             itemView.setOnClickListener { onItemClick(appointment) }
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_appointment, parent, false)
+        val view =
+            LayoutInflater.from(parent.context).inflate(R.layout.item_appointment, parent, false)
         return ViewHolder(view)
     }
 

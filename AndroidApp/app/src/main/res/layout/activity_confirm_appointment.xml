@@ -6,7 +6,6 @@
     android:layout_height="match_parent"
     tools:context=".ConfirmAppointmentActivity">
 
-    <!-- Toolbar sus -->
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
@@ -16,7 +15,6 @@
         app:layout_constraintTop_toTopOf="parent"
         app:title="Confirmare programare" />
 
-    <!-- ScrollView care conține tot conținutul paginii (mai puțin butonul) -->
     <ScrollView
         android:id="@+id/scrollViewContent"
         android:layout_width="0dp"
@@ -27,7 +25,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/toolbar">
 
-        <!-- Un LinearLayout vertical care grupează toate secțiunile -->
         <LinearLayout
             android:id="@+id/containerAll"
             android:layout_width="match_parent"
@@ -35,7 +32,6 @@
             android:orientation="vertical"
             android:padding="0dp">
 
-            <!-- Secțiunea: Zi selectată -->
             <LinearLayout
                 android:id="@+id/containerDate"
                 android:layout_width="wrap_content"
@@ -61,13 +57,11 @@
                     android:textSize="18sp" />
             </LinearLayout>
 
-            <!-- Linie de separare -->
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:background="#CCCCCC" />
 
-            <!-- Secțiunea: Ora selectată -->
             <LinearLayout
                 android:id="@+id/containerHour"
                 android:layout_width="wrap_content"
@@ -93,13 +87,11 @@
                     android:textSize="18sp" />
             </LinearLayout>
 
-            <!-- Linie de separare -->
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:background="#CCCCCC" />
 
-            <!-- Secțiunea: Doctor -->
             <LinearLayout
                 android:id="@+id/containerDoctor"
                 android:layout_width="wrap_content"
@@ -125,13 +117,11 @@
                     android:textSize="18sp" />
             </LinearLayout>
 
-            <!-- Linie de separare -->
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:background="#CCCCCC" />
 
-            <!-- Secțiunea: Simptome selectate -->
             <LinearLayout
                 android:id="@+id/containerSymptoms"
                 android:layout_width="wrap_content"

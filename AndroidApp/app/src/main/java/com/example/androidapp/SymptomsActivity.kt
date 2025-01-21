@@ -52,8 +52,7 @@ class SymptomsActivity : AppCompatActivity() {
         RetrofitClient.symptomService.getCategories()
             .enqueue(object : Callback<List<CategoryResponse>> {
                 override fun onResponse(
-                    call: Call<List<CategoryResponse>>,
-                    response: Response<List<CategoryResponse>>
+                    call: Call<List<CategoryResponse>>, response: Response<List<CategoryResponse>>
                 ) {
                     if (response.isSuccessful) {
                         Log.d("Categories", "Fetched categories successfully: ${response.body()}")
@@ -80,8 +79,7 @@ class SymptomsActivity : AppCompatActivity() {
         RetrofitClient.symptomService.getSymptoms()
             .enqueue(object : Callback<List<SymptomResponse>> {
                 override fun onResponse(
-                    call: Call<List<SymptomResponse>>,
-                    response: Response<List<SymptomResponse>>
+                    call: Call<List<SymptomResponse>>, response: Response<List<SymptomResponse>>
                 ) {
                     if (response.isSuccessful) {
                         symptoms.clear()
@@ -161,8 +159,7 @@ class SymptomsActivity : AppCompatActivity() {
         val isAnySymptomSelected = symptoms.any { it.isSelected }
         confirmButton.isEnabled = isAnySymptomSelected
         confirmButton.backgroundTintList = resources.getColorStateList(
-            if (isAnySymptomSelected) R.color.primaryColor else R.color.gray_200,
-            theme
+            if (isAnySymptomSelected) R.color.primaryColor else R.color.gray_200, theme
         )
     }
 

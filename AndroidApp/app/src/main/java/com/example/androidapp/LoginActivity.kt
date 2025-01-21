@@ -79,9 +79,7 @@ class LoginActivity : AppCompatActivity() {
                     performLogin(email, password)
                 } else {
                     Toast.makeText(
-                        this,
-                        getString(R.string.invalid_credentials),
-                        Toast.LENGTH_SHORT
+                        this, getString(R.string.invalid_credentials), Toast.LENGTH_SHORT
                     ).show()
                 }
             } else {
@@ -104,26 +102,17 @@ class LoginActivity : AppCompatActivity() {
     private fun performLogin(username: String, password: String) {
         val url = "http://89.33.44.130:8080/realms/HealthyApp/protocol/openid-connect/token"
 
-        val formBody = FormBody.Builder()
-            .add("client_id", "android-app")
-            .add("client_secret", "pHWo9QZW3f8avDCYSN5OSSoMcWCKNeCk")
-            .add("grant_type", "password")
-            .add("username", username)
-            .add("password", password)
-            .build()
+        val formBody = FormBody.Builder().add("client_id", "android-app")
+            .add("client_secret", "pHWo9QZW3f8avDCYSN5OSSoMcWCKNeCk").add("grant_type", "password")
+            .add("username", username).add("password", password).build()
 
-        val request = Request.Builder()
-            .url(url)
-            .post(formBody)
-            .build()
+        val request = Request.Builder().url(url).post(formBody).build()
 
         client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
                 runOnUiThread {
                     Toast.makeText(
-                        this@LoginActivity,
-                        "Login failed: ${e.message}",
-                        Toast.LENGTH_LONG
+                        this@LoginActivity, "Login failed: ${e.message}", Toast.LENGTH_LONG
                     ).show()
                 }
             }
@@ -233,12 +222,10 @@ class LoginActivity : AppCompatActivity() {
                             }
 
                             override fun onFailure(
-                                call: retrofit2.Call<UserResponse>,
-                                t: Throwable
+                                call: retrofit2.Call<UserResponse>, t: Throwable
                             ) {
                                 Log.d(
-                                    "LoginActivityLog",
-                                    "Error on user fetch request: ${t.message}"
+                                    "LoginActivityLog", "Error on user fetch request: ${t.message}"
                                 )
                                 runOnUiThread {
                                     Toast.makeText(

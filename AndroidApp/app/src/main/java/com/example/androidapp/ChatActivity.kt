@@ -57,7 +57,6 @@ class ChatActivity : AppCompatActivity() {
             this.scrollToPosition(messageAdapter.itemCount - 1)
         }
 
-        // Allow sending message via keyboard "Send" button
         editTextUserInput.setOnEditorActionListener { _, actionId, event ->
             if (actionId == EditorInfo.IME_ACTION_SEND || event?.keyCode == KeyEvent.KEYCODE_ENTER) {
                 buttonSend.performClick()
@@ -90,11 +89,9 @@ class ChatActivity : AppCompatActivity() {
     }
 
     private fun sendChatMessageToServer(currentMessage: String) {
-        // Add the user's message to the messages list
         val userMsg = Message(content = currentMessage, isUser = true)
         messages.add(userMsg)
 
-        // Build the conversation string
         val conversationBuilder = StringBuilder()
         for (msg in messages) {
             if (msg.isUser) {

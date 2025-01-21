@@ -83,14 +83,12 @@ class ScheduleActivity : AppCompatActivity() {
         RetrofitClient.appointmentService.getAvailableHours(doctorId, selectedDate)
             .enqueue(object : Callback<List<String>> {
                 override fun onResponse(
-                    call: Call<List<String>>,
-                    response: Response<List<String>>
+                    call: Call<List<String>>, response: Response<List<String>>
                 ) {
                     if (response.isSuccessful) {
                         val availableHours = response.body() ?: emptyList()
                         Log.d(
-                            "AvailableHours",
-                            "Available hours for $selectedDate: $availableHours"
+                            "AvailableHours", "Available hours for $selectedDate: $availableHours"
                         )
                         updateHourList(availableHours)
                     } else {
@@ -194,8 +192,7 @@ class ScheduleActivity : AppCompatActivity() {
                     isPastDay || isBlockedToday -> {
                         setTextColor(
                             ContextCompat.getColor(
-                                this@ScheduleActivity,
-                                android.R.color.darker_gray
+                                this@ScheduleActivity, android.R.color.darker_gray
                             )
                         )
                         isClickable = false
@@ -204,8 +201,7 @@ class ScheduleActivity : AppCompatActivity() {
                     else -> {
                         setTextColor(
                             ContextCompat.getColor(
-                                this@ScheduleActivity,
-                                android.R.color.black
+                                this@ScheduleActivity, android.R.color.black
                             )
                         )
                         isClickable = true
@@ -236,9 +232,7 @@ class ScheduleActivity : AppCompatActivity() {
             currentDay.add(Calendar.DAY_OF_MONTH, 1) // Mergem la ziua următoare
         }
 
-        if (currentDay.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY ||
-            currentDay.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY
-        ) {
+        if (currentDay.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY || currentDay.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY) {
             currentDay.add(
                 Calendar.DAY_OF_MONTH,
                 if (currentDay.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY) 2 else 1
@@ -268,8 +262,9 @@ class ScheduleActivity : AppCompatActivity() {
 
 
     private fun isSameDay(day1: Calendar, day2: Calendar): Boolean {
-        return day1.get(Calendar.YEAR) == day2.get(Calendar.YEAR) &&
-                day1.get(Calendar.DAY_OF_YEAR) == day2.get(Calendar.DAY_OF_YEAR)
+        return day1.get(Calendar.YEAR) == day2.get(Calendar.YEAR) && day1.get(Calendar.DAY_OF_YEAR) == day2.get(
+            Calendar.DAY_OF_YEAR
+        )
     }
 
     private fun clearSelection() {

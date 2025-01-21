@@ -13,8 +13,7 @@ import retrofit2.http.Query
 interface AppointmentService {
     @GET("appointments/free-slots/{doctorId}")
     fun getAvailableHours(
-        @Path("doctorId") doctorId: Int,
-        @Query("date") date: String
+        @Path("doctorId") doctorId: Int, @Query("date") date: String
     ): Call<List<String>>
 
     @GET("appointments/patient/{patientId}")
@@ -24,8 +23,7 @@ interface AppointmentService {
 
     @GET("appointments/doctor/{doctorId}")
     fun getAppointmentsByDoctorId(
-        @Path("doctorId") doctorId: Int,
-        @Query("date") date: String
+        @Path("doctorId") doctorId: Int, @Query("date") date: String
     ): Call<List<AppointmentResponse>>
 
     @POST("appointments")
