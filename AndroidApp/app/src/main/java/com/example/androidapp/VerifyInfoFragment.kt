@@ -37,7 +37,7 @@ class VerifyInfoFragment : Fragment() {
         partialUserInfo?.let {
             firstNameTextView.text = it.firstName
             lastNameTextView.text = it.lastName
-            if(it.gender == "male") {
+            if (it.gender == "male") {
                 genderTextView.text = "Masculin"
             } else {
                 genderTextView.text = "Feminin"

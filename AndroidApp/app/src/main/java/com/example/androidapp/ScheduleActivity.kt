@@ -2,20 +2,21 @@ package com.example.androidapp
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
+import android.view.Gravity
+import android.view.MenuItem
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
-import android.view.Gravity
-import android.util.Log
-import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.content.ContextCompat
 import com.example.androidapp.api.RetrofitClient
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import java.util.*
-import androidx.core.content.ContextCompat
+import java.util.Calendar
+import java.util.Locale
 
 
 class ScheduleActivity : AppCompatActivity() {
@@ -64,12 +65,14 @@ class ScheduleActivity : AppCompatActivity() {
             updateWeekDisplay()
         }
     }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             android.R.id.home -> {
                 onBackPressedDispatcher.onBackPressed()
                 true
             }
+
             else -> super.onOptionsItemSelected(item)
         }
     }
@@ -77,23 +80,38 @@ class ScheduleActivity : AppCompatActivity() {
     private fun fetchAppointmentsForSelectedDate(selectedDate: String) {
         val doctorId = 1
 
-        RetrofitClient.appointmentService.getAvailableHours(doctorId, selectedDate).enqueue(object : Callback<List<String>> {
-            override fun onResponse(call: Call<List<String>>, response: Response<List<String>>) {
-                if (response.isSuccessful) {
-                    val availableHours = response.body() ?: emptyList()
-                    Log.d("AvailableHours", "Available hours for $selectedDate: $availableHours")
-                    updateHourList(availableHours)
-                } else {
-                    Toast.makeText(this@ScheduleActivity, "Failed to fetch available hours", Toast.LENGTH_SHORT).show()
-                    Log.e("AvailableHours", "Error fetching available hours: ${response.message()}")
+        RetrofitClient.appointmentService.getAvailableHours(doctorId, selectedDate)
+            .enqueue(object : Callback<List<String>> {
+                override fun onResponse(
+                    call: Call<List<String>>,
+                    response: Response<List<String>>
+                ) {
+                    if (response.isSuccessful) {
+                        val availableHours = response.body() ?: emptyList()
+                        Log.d(
+                            "AvailableHours",
+                            "Available hours for $selectedDate: $availableHours"
+                        )
+                        updateHourList(availableHours)
+                    } else {
+                        Toast.makeText(
+                            this@ScheduleActivity,
+                            "Failed to fetch available hours",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        Log.e(
+                            "AvailableHours",
+                            "Error fetching available hours: ${response.message()}"
+                        )
+                    }
                 }
-            }
 
-            override fun onFailure(call: Call<List<String>>, t: Throwable) {
-                Toast.makeText(this@ScheduleActivity, "Error: ${t.message}", Toast.LENGTH_SHORT).show()
-                Log.e("AvailableHours", "Error: ${t.message}", t)
-            }
-        })
+                override fun onFailure(call: Call<List<String>>, t: Throwable) {
+                    Toast.makeText(this@ScheduleActivity, "Error: ${t.message}", Toast.LENGTH_SHORT)
+                        .show()
+                    Log.e("AvailableHours", "Error: ${t.message}", t)
+                }
+            })
     }
 
     private fun updateHourList(availableHours: List<String>) {
@@ -161,22 +179,35 @@ class ScheduleActivity : AppCompatActivity() {
             val day = weekStart.clone() as Calendar
             day.add(Calendar.DAY_OF_MONTH, i)
 
-            val isPastDay = day.before(Calendar.getInstance()) && !isSameDay(day, Calendar.getInstance())
+            val isPastDay =
+                day.before(Calendar.getInstance()) && !isSameDay(day, Calendar.getInstance())
             val isBlockedToday = isSameDay(day, now) && isAfterCutoff
 
             val dayView = TextView(this).apply {
                 text = "${daysOfWeek[i]}\n${day.get(Calendar.DAY_OF_MONTH)}"
                 gravity = Gravity.CENTER
                 setPadding(16, 8, 16, 8)
-                layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
+                layoutParams =
+                    LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
 
                 when {
                     isPastDay || isBlockedToday -> {
-                        setTextColor(ContextCompat.getColor(this@ScheduleActivity, android.R.color.darker_gray))
+                        setTextColor(
+                            ContextCompat.getColor(
+                                this@ScheduleActivity,
+                                android.R.color.darker_gray
+                            )
+                        )
                         isClickable = false
                     }
+
                     else -> {
-                        setTextColor(ContextCompat.getColor(this@ScheduleActivity, android.R.color.black))
+                        setTextColor(
+                            ContextCompat.getColor(
+                                this@ScheduleActivity,
+                                android.R.color.black
+                            )
+                        )
                         isClickable = true
                     }
                 }
@@ -206,8 +237,12 @@ class ScheduleActivity : AppCompatActivity() {
         }
 
         if (currentDay.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY ||
-            currentDay.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY) {
-            currentDay.add(Calendar.DAY_OF_MONTH, if (currentDay.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY) 2 else 1)
+            currentDay.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY
+        ) {
+            currentDay.add(
+                Calendar.DAY_OF_MONTH,
+                if (currentDay.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY) 2 else 1
+            )
         }
 
         weekStart = currentDay.clone() as Calendar
@@ -253,7 +288,8 @@ class ScheduleActivity : AppCompatActivity() {
 
     private fun getFormattedDateForText(calendar: Calendar): String {
         val day = calendar.get(Calendar.DAY_OF_MONTH).toString()
-        val month = calendar.getDisplayName(Calendar.MONTH, Calendar.SHORT, Locale("ro", "RO"))?.lowercase()
+        val month =
+            calendar.getDisplayName(Calendar.MONTH, Calendar.SHORT, Locale("ro", "RO"))?.lowercase()
         val year = calendar.get(Calendar.YEAR)
 
         return "$day $month $year"

@@ -1,9 +1,9 @@
 <!-- File: res/layout/item_appointment.xml -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:padding="12dp"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="12dp">
 
     <TextView
         android:id="@+id/textViewPatientName"
@@ -17,17 +17,17 @@
         android:id="@+id/textViewDate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
         android:text="Data: dd-MM-yyyy"
-        android:textSize="14sp"
-        android:layout_marginTop="4dp" />
+        android:textSize="14sp" />
 
     <TextView
         android:id="@+id/textViewTime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
         android:text="Ora: HH:mm AM/PM"
-        android:textSize="14sp"
-        android:layout_marginTop="2dp" />
+        android:textSize="14sp" />
 
     <!-- TextView pentru Simptome a fost eliminat -->
 

@@ -46,12 +46,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
+        android:height="64dp"
         android:backgroundTint="@android:color/darker_gray"
         android:enabled="false"
         android:fontFamily="@font/montserrat_bold"
         android:text="Confirmă selecția"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@+id/scrollView2"
-        tools:layout_editor_absoluteX="16dp"
-        android:height="64dp"/>
+        tools:layout_editor_absoluteX="16dp" />
 </androidx.constraintlayout.widget.ConstraintLayout>

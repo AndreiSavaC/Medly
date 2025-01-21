@@ -4,13 +4,16 @@ import android.os.Bundle
 import android.util.Log
 import android.view.KeyEvent
 import android.view.MenuItem
+import android.view.View
 import android.view.inputmethod.EditorInfo
-import android.widget.*
+import android.widget.EditText
+import android.widget.ImageButton
+import android.widget.ProgressBar
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.androidapp.MessageAdapter
 import com.example.androidapp.api.RetrofitClient
 import com.example.androidapp.models.ChatRequest
 import com.example.androidapp.models.ChatResponse
@@ -18,7 +21,6 @@ import com.example.androidapp.models.Message
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import android.view.View
 
 class ChatActivity : AppCompatActivity() {
 
@@ -82,6 +84,7 @@ class ChatActivity : AppCompatActivity() {
                 onBackPressedDispatcher.onBackPressed()
                 true
             }
+
             else -> super.onOptionsItemSelected(item)
         }
     }
@@ -134,14 +137,21 @@ class ChatActivity : AppCompatActivity() {
                         }
                     } else {
                         Log.e("ChatActivityLOG", "Response body is null!")
-                        val errorMessage = Message(content = "Error: Empty response from server.", isUser = false)
+                        val errorMessage =
+                            Message(content = "Error: Empty response from server.", isUser = false)
                         messages.add(errorMessage)
                         messageAdapter.notifyItemInserted(messages.size - 1)
                         recyclerViewConversation.scrollToPosition(messages.size - 1)
                     }
                 } else {
-                    Log.e("ChatActivityLOG", "Server error: ${response.code()} - ${response.message()}")
-                    val errorMessage = Message(content = "Server error: ${response.code()} - ${response.message()}", isUser = false)
+                    Log.e(
+                        "ChatActivityLOG",
+                        "Server error: ${response.code()} - ${response.message()}"
+                    )
+                    val errorMessage = Message(
+                        content = "Server error: ${response.code()} - ${response.message()}",
+                        isUser = false
+                    )
                     messages.add(errorMessage)
                     messageAdapter.notifyItemInserted(messages.size - 1)
                     recyclerViewConversation.scrollToPosition(messages.size - 1)
@@ -151,7 +161,8 @@ class ChatActivity : AppCompatActivity() {
             override fun onFailure(call: Call<ChatResponse>, t: Throwable) {
                 progressBar.visibility = View.GONE
                 Log.e("ChatActivityLOG", "Network failure: ${t.message}", t)
-                val failureMessage = Message(content = "Network error: ${t.message}", isUser = false)
+                val failureMessage =
+                    Message(content = "Network error: ${t.message}", isUser = false)
                 messages.add(failureMessage)
                 messageAdapter.notifyItemInserted(messages.size - 1)
                 recyclerViewConversation.scrollToPosition(messages.size - 1)

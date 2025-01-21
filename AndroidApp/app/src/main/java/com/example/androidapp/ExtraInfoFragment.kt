@@ -12,8 +12,8 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.example.androidapp.api.RetrofitClient
 import com.example.androidapp.models.Insurance
-import com.example.androidapp.models.UserResponse
 import com.example.androidapp.models.UserRequest
+import com.example.androidapp.models.UserResponse
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -52,26 +52,30 @@ class ExtraInfoFragment : Fragment() {
         )
 
         // Make the POST request using Retrofit
-        RetrofitClient.userService.createUser(userRequest,password).enqueue(object : Callback<UserResponse> {
-            override fun onResponse(call: Call<UserResponse>, response: Response<UserResponse>) {
-                if (response.isSuccessful) {
-                    // Handle success
-                    val createdUser = response.body()
-                    if (createdUser != null) {
-                        // Successfully created the user, you can handle the response
-                        Log.d("CreateAccount", "User created successfully: $createdUser")
+        RetrofitClient.userService.createUser(userRequest, password)
+            .enqueue(object : Callback<UserResponse> {
+                override fun onResponse(
+                    call: Call<UserResponse>,
+                    response: Response<UserResponse>
+                ) {
+                    if (response.isSuccessful) {
+                        // Handle success
+                        val createdUser = response.body()
+                        if (createdUser != null) {
+                            // Successfully created the user, you can handle the response
+                            Log.d("CreateAccount", "User created successfully: $createdUser")
+                        }
+                    } else {
+                        // Handle failure, perhaps the user already exists or invalid data
+                        Log.e("CreateAccount", "Error: ${response.errorBody()?.string()}")
                     }
-                } else {
-                    // Handle failure, perhaps the user already exists or invalid data
-                    Log.e("CreateAccount", "Error: ${response.errorBody()?.string()}")
                 }
-            }
 
-            override fun onFailure(call: Call<UserResponse>, t: Throwable) {
-                // Handle failure (network error, etc.)
-                Log.e("CreateAccount", "Error: ${t.message}")
-            }
-        })
+                override fun onFailure(call: Call<UserResponse>, t: Throwable) {
+                    // Handle failure (network error, etc.)
+                    Log.e("CreateAccount", "Error: ${t.message}")
+                }
+            })
 
         return true  // You can return true or false based on whether you want to return something directly
     }

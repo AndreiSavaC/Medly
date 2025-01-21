@@ -5,11 +5,15 @@ import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.MenuItem
-import android.widget.*
+import android.widget.Button
+import android.widget.CheckBox
+import android.widget.LinearLayout
+import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import com.example.androidapp.api.RetrofitClient
 import com.example.androidapp.api.CategoryResponse
+import com.example.androidapp.api.RetrofitClient
 import com.example.androidapp.api.SymptomResponse
 import com.example.androidapp.models.Category
 import com.example.androidapp.models.Symptom
@@ -45,50 +49,55 @@ class SymptomsActivity : AppCompatActivity() {
     }
 
     private fun loadCategoriesAndSymptoms(selectedDate: String?, selectedHour: String?) {
-        RetrofitClient.symptomService.getCategories().enqueue(object : Callback<List<CategoryResponse>> {
-            override fun onResponse(
-                call: Call<List<CategoryResponse>>,
-                response: Response<List<CategoryResponse>>
-            ) {
-                if (response.isSuccessful) {
-                    Log.d("Categories", "Fetched categories successfully: ${response.body()}")
-                    categories.clear()
-                    categories.addAll(response.body()?.map {
-                        Category(it.id, it.name)
-                    } ?: emptyList())
-                    loadSymptoms(selectedDate, selectedHour)
-                } else {
-                    Log.d("Categories", "Failed to fetch categories. Response code: ${response.code()}, message: ${response.message()}")
+        RetrofitClient.symptomService.getCategories()
+            .enqueue(object : Callback<List<CategoryResponse>> {
+                override fun onResponse(
+                    call: Call<List<CategoryResponse>>,
+                    response: Response<List<CategoryResponse>>
+                ) {
+                    if (response.isSuccessful) {
+                        Log.d("Categories", "Fetched categories successfully: ${response.body()}")
+                        categories.clear()
+                        categories.addAll(response.body()?.map {
+                            Category(it.id, it.name)
+                        } ?: emptyList())
+                        loadSymptoms(selectedDate, selectedHour)
+                    } else {
+                        Log.d(
+                            "Categories",
+                            "Failed to fetch categories. Response code: ${response.code()}, message: ${response.message()}"
+                        )
+                    }
                 }
-            }
 
-            override fun onFailure(call: Call<List<CategoryResponse>>, t: Throwable) {
-                Log.e("Categories", "Error fetching categories: ${t.message}", t)
-            }
-        })
+                override fun onFailure(call: Call<List<CategoryResponse>>, t: Throwable) {
+                    Log.e("Categories", "Error fetching categories: ${t.message}", t)
+                }
+            })
     }
 
     private fun loadSymptoms(selectedDate: String?, selectedHour: String?) {
-        RetrofitClient.symptomService.getSymptoms().enqueue(object : Callback<List<SymptomResponse>> {
-            override fun onResponse(
-                call: Call<List<SymptomResponse>>,
-                response: Response<List<SymptomResponse>>
-            ) {
-                if (response.isSuccessful) {
-                    symptoms.clear()
-                    symptoms.addAll(response.body()?.map {
-                        Symptom(it.id, it.name, it.categoryId)
-                    } ?: emptyList())
-                    populateCategoriesAndSymptoms(selectedDate, selectedHour)
-                } else {
-                    showError("Failed to fetch symptoms")
+        RetrofitClient.symptomService.getSymptoms()
+            .enqueue(object : Callback<List<SymptomResponse>> {
+                override fun onResponse(
+                    call: Call<List<SymptomResponse>>,
+                    response: Response<List<SymptomResponse>>
+                ) {
+                    if (response.isSuccessful) {
+                        symptoms.clear()
+                        symptoms.addAll(response.body()?.map {
+                            Symptom(it.id, it.name, it.categoryId)
+                        } ?: emptyList())
+                        populateCategoriesAndSymptoms(selectedDate, selectedHour)
+                    } else {
+                        showError("Failed to fetch symptoms")
+                    }
                 }
-            }
 
-            override fun onFailure(call: Call<List<SymptomResponse>>, t: Throwable) {
-                showError("Error: ${t.message}")
-            }
-        })
+                override fun onFailure(call: Call<List<SymptomResponse>>, t: Throwable) {
+                    showError("Error: ${t.message}")
+                }
+            })
     }
 
     private fun populateCategoriesAndSymptoms(selectedDate: String?, selectedHour: String?) {
@@ -100,7 +109,7 @@ class SymptomsActivity : AppCompatActivity() {
 
             val categoryTitle = categoryView.findViewById<TextView>(R.id.categoryTitle)
             categoryTitle.text = category.name
-            categoryTitle.setTextColor(getResources().getColor(R. color. black))
+            categoryTitle.setTextColor(getResources().getColor(R.color.black))
             categoryTitle.textSize = 24.0f
 
             val symptomLayout = categoryView.findViewById<LinearLayout>(R.id.symptomLayout)
@@ -124,8 +133,9 @@ class SymptomsActivity : AppCompatActivity() {
             val selectedSymptoms = symptoms.filter { it.isSelected }.map { it.name }
             val selectedSymptomsByCategory = categories.associate { category ->
 
-                val selectedSymptomsInCategory = symptoms.filter { it.isSelected && it.categoryId == category.id }
-                    .map { it.name }
+                val selectedSymptomsInCategory =
+                    symptoms.filter { it.isSelected && it.categoryId == category.id }
+                        .map { it.name }
                 category.name to selectedSymptomsInCategory
             }.filter { it.value.isNotEmpty() }
 
@@ -166,6 +176,7 @@ class SymptomsActivity : AppCompatActivity() {
                 onBackPressedDispatcher.onBackPressed()
                 true
             }
+
             else -> super.onOptionsItemSelected(item)
         }
     }

@@ -19,7 +19,8 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.io.IOException
-import java.util.*
+import java.util.Calendar
+import java.util.Locale
 
 class DoctorLandingActivity : AppCompatActivity() {
 

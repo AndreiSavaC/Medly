@@ -14,7 +14,12 @@ import androidx.core.view.WindowInsetsControllerCompat
 import com.auth0.android.jwt.JWT
 import com.example.androidapp.api.RetrofitClient
 import com.example.androidapp.models.UserResponse
-import okhttp3.*
+import okhttp3.Call
+import okhttp3.Callback
+import okhttp3.FormBody
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.Response
 import org.json.JSONObject
 import java.io.IOException
 
@@ -33,7 +38,8 @@ class LoginActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-        WindowInsetsControllerCompat(window, findViewById(R.id.main)).isAppearanceLightStatusBars = true
+        WindowInsetsControllerCompat(window, findViewById(R.id.main)).isAppearanceLightStatusBars =
+            true
 
         val sharedPrefs = getSharedPreferences("authPrefs", MODE_PRIVATE)
         val accessToken = sharedPrefs.getString("ACCESS_TOKEN", null)
@@ -72,7 +78,11 @@ class LoginActivity : AppCompatActivity() {
                 if (email.contains("@") && password.length > 5) {
                     performLogin(email, password)
                 } else {
-                    Toast.makeText(this, getString(R.string.invalid_credentials), Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        this,
+                        getString(R.string.invalid_credentials),
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             } else {
                 Toast.makeText(this, getString(R.string.no_credentials), Toast.LENGTH_SHORT).show()
@@ -110,7 +120,11 @@ class LoginActivity : AppCompatActivity() {
         client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
                 runOnUiThread {
-                    Toast.makeText(this@LoginActivity, "Login failed: ${e.message}", Toast.LENGTH_LONG).show()
+                    Toast.makeText(
+                        this@LoginActivity,
+                        "Login failed: ${e.message}",
+                        Toast.LENGTH_LONG
+                    ).show()
                 }
             }
 
@@ -136,7 +150,8 @@ class LoginActivity : AppCompatActivity() {
                             return
                         }
 
-                        val callUser = RetrofitClient.userService.getUserByKeycloakId(keycloakUserId)
+                        val callUser =
+                            RetrofitClient.userService.getUserByKeycloakId(keycloakUserId)
                         callUser.enqueue(object : retrofit2.Callback<UserResponse> {
                             override fun onResponse(
                                 call: retrofit2.Call<UserResponse>,
@@ -150,10 +165,11 @@ class LoginActivity : AppCompatActivity() {
                                         val isDoctor = userResponse.isDoctor
                                         val patientId = userResponse.id
                                         val doctorId = userResponse.doctorId
-                                        val lastName =  userResponse.lastName
+                                        val lastName = userResponse.lastName
                                         val firstName = userResponse.firstName
 
-                                        val sharedPrefs = getSharedPreferences("authPrefs", MODE_PRIVATE)
+                                        val sharedPrefs =
+                                            getSharedPreferences("authPrefs", MODE_PRIVATE)
                                         sharedPrefs.edit().apply {
                                             putString("ACCESS_TOKEN", accessToken)
                                             putString("REFRESH_TOKEN", refreshToken)
@@ -171,15 +187,28 @@ class LoginActivity : AppCompatActivity() {
 
                                         runOnUiThread {
                                             if (isDoctor) {
-                                                startActivity(Intent(this@LoginActivity, DoctorLandingActivity::class.java))
+                                                startActivity(
+                                                    Intent(
+                                                        this@LoginActivity,
+                                                        DoctorLandingActivity::class.java
+                                                    )
+                                                )
                                                 finish()
                                             } else {
-                                                startActivity(Intent(this@LoginActivity, PatientLandingActivity::class.java))
+                                                startActivity(
+                                                    Intent(
+                                                        this@LoginActivity,
+                                                        PatientLandingActivity::class.java
+                                                    )
+                                                )
                                                 finish()
                                             }
                                         }
                                     } else {
-                                        Log.d("LoginActivityLog", "User not found for Keycloak ID: $keycloakUserId")
+                                        Log.d(
+                                            "LoginActivityLog",
+                                            "User not found for Keycloak ID: $keycloakUserId"
+                                        )
                                         runOnUiThread {
                                             Toast.makeText(
                                                 this@LoginActivity,
@@ -189,7 +218,10 @@ class LoginActivity : AppCompatActivity() {
                                         }
                                     }
                                 } else {
-                                    Log.d("LoginActivityLog", "Error fetching user: ${response.message()}")
+                                    Log.d(
+                                        "LoginActivityLog",
+                                        "Error fetching user: ${response.message()}"
+                                    )
                                     runOnUiThread {
                                         Toast.makeText(
                                             this@LoginActivity,
@@ -200,8 +232,14 @@ class LoginActivity : AppCompatActivity() {
                                 }
                             }
 
-                            override fun onFailure(call: retrofit2.Call<UserResponse>, t: Throwable) {
-                                Log.d("LoginActivityLog", "Error on user fetch request: ${t.message}")
+                            override fun onFailure(
+                                call: retrofit2.Call<UserResponse>,
+                                t: Throwable
+                            ) {
+                                Log.d(
+                                    "LoginActivityLog",
+                                    "Error on user fetch request: ${t.message}"
+                                )
                                 runOnUiThread {
                                     Toast.makeText(
                                         this@LoginActivity,
