@@ -86,7 +86,9 @@ class PatientLandingActivity : AppCompatActivity() {
                 ) {
                     runOnUiThread {
                         if (response.isSuccessful) {
-                            val appointments = response.body() ?: emptyList()
+                            val appointments =
+                                response.body()?.sortedWith(compareBy({ it.date }, { it.time }))
+                                    ?: emptyList()
 
                             if (appointments.isEmpty()) {
                                 noAppointmentsTextView.visibility = TextView.VISIBLE
