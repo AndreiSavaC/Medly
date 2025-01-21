@@ -55,27 +55,27 @@ def generate_doctor_report():
         )
 
 
-@groq_bp.route("/reports/patient", methods=["POST"])
+@groq_bp.route("/chat", methods=["POST"])
 def generate_patient_report():
     data = request.get_json()
-    symptoms = data.get("symptoms", [])
+    message = data.get("message")
 
-    if not symptoms or not isinstance(symptoms, list):
+    if not message or not isinstance(message, str):
         return (
             jsonify(
-                {
-                    "error": "Invalid or missing 'symptoms' field. It must be a list of symptoms."
-                }
+                {"error": "Invalid or missing 'message' field. It must be a string."}
             ),
             400,
         )
 
     system_prompt = (
-        "Ești un asistent medical bine informat. Sarcina ta este să oferi pacienților recomandări practice și utile "
-        "pentru gestionarea simptomelor lor până când ajung la un doctor. Fii clar, empatic și oferă sfaturi bazate pe dovezi."
+        "Ești un doctor digital bine informat și empatic, cu scopul de a ajuta pacienții să înțeleagă și să gestioneze simptomele lor. "
+        "Răspunsurile tale trebuie să fie clare, practice, și bazate pe informații medicale actuale și de încredere. "
+        "Evită să oferi diagnosticuri definitive, dar oferă sfaturi care pot ajuta pacientul să își gestioneze simptomele până când ajunge la un doctor. "
+        "Asigură-te că tonul tău este calm și încurajator, iar răspunsurile tale sunt în limba română."
     )
 
-    patient_message = f"Pacientul raportează următoarele simptome: {', '.join(symptoms)}. Te rog să oferi recomandări practice în limba română pentru pacient."
+    patient_message = f"Pacientul iti da urmatortul mesaj sau concatenare de mesaje dintr-o conversatie anterioara: {message}. Te rog să oferi recomandări practice în limba română pentru pacient."
 
     try:
         patient_completion = client.chat.completions.create(
@@ -84,6 +84,7 @@ def generate_patient_report():
                 {"role": "user", "content": patient_message},
             ],
             model="llama-3.3-70b-versatile",
+            max_tokens=100,
             stream=False,
         )
         patient_recommendations = patient_completion.choices[0].message.content
