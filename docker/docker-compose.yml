@@ -30,13 +30,13 @@ services:
       KC_HOSTNAME_STRICT_HTTPS: false
       KC_HTTP_ENABLED: true
       KC_PROXY: edge
-      KEYCLOAK_COOKIE_SECURE: false # Disable secure cookies for testing
+      KEYCLOAK_COOKIE_SECURE: false
     ports:
       - "8080:8080"
     depends_on:
       - postgres
     volumes:
-      - keycloak_data:/opt/keycloak/data # Mount a volume to persist Keycloak's data and config
+      - keycloak_data:/opt/keycloak/data
     networks:
       - pdm-network
 
@@ -78,7 +78,6 @@ services:
 volumes:
   postgres_data:
   keycloak_data:
-    # Define the volume for Keycloak data
 
 networks:
   pdm-network:
