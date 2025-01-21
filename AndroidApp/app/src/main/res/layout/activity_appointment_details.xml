@@ -19,7 +19,7 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:fillViewport="true"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/btnGenerateReport"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/toolbar3">
@@ -43,11 +43,11 @@
                 android:padding="8dp">
 
                 <ImageView
-                    android:id="@+id/imgCalendar"
+                    android:id="@+id/imgUser"
                     android:layout_width="50dp"
                     android:layout_height="50dp"
                     android:layout_marginEnd="12dp"
-                    android:src="@drawable/calendar" />
+                    android:src="@drawable/user" />
 
                 <TextView
                     android:id="@+id/txtPacienteName"
@@ -73,11 +73,11 @@
                 android:padding="8dp">
 
                 <ImageView
-                    android:id="@+id/imgClock"
+                    android:id="@+id/imgCalendar"
                     android:layout_width="50dp"
                     android:layout_height="50dp"
                     android:layout_marginEnd="12dp"
-                    android:src="@drawable/clock" />
+                    android:src="@drawable/calendar" />
 
                 <TextView
                     android:id="@+id/txtSelectedDate"
@@ -149,7 +149,7 @@
                     android:layout_width="50dp"
                     android:layout_height="50dp"
                     android:layout_marginEnd="12dp"
-                    android:src="@drawable/clock" />
+                    android:src="@drawable/height" />
 
                 <TextView
                     android:id="@+id/txtHeight"
@@ -180,7 +180,7 @@
                     android:layout_width="50dp"
                     android:layout_height="50dp"
                     android:layout_marginEnd="12dp"
-                    android:src="@drawable/clock" />
+                    android:src="@drawable/weight" />
 
                 <TextView
                     android:id="@+id/txtWeight"
@@ -211,14 +211,14 @@
                     android:layout_width="50dp"
                     android:layout_height="50dp"
                     android:layout_marginEnd="12dp"
-                    android:src="@drawable/clock" />
+                    android:src="@drawable/birthday" />
 
                 <TextView
                     android:id="@+id/txtBirthdate"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/montserrat_bold"
-                    android:text="Greutate"
+                    android:text="Birthdate"
                     android:textColor="@color/black"
                     android:textSize="18sp" />
             </LinearLayout>

@@ -53,6 +53,7 @@ class AppointmentDetailsActivity : AppCompatActivity() {
             if (symptomsList.isNotEmpty()) {
                 val intent = Intent(this, ReportActivity::class.java).apply {
                     putStringArrayListExtra("symptoms", ArrayList(symptomsList))
+                    putExtra("patientName", patientName)
                 }
                 startActivity(intent)
             } else {

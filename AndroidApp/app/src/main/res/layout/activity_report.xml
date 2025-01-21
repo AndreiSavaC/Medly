@@ -44,9 +44,11 @@
     <ScrollView
         android:id="@+id/scrollViewReport"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="599dp"
+        android:layout_above="@+id/btnDownloadPdf"
         android:layout_below="@+id/toolbar2"
         android:layout_marginTop="8dp"
+        android:layout_marginBottom="11dp"
         android:visibility="visible">
 
         <TextView
@@ -55,10 +57,23 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"
+            android:layout_marginBottom="8dp"
             android:fontFamily="@font/montserrat"
             android:padding="8dp"
             android:text="Raportul va apărea aici"
             android:textSize="16sp" />
+
+
     </ScrollView>
+
+    <Button
+        android:id="@+id/btnDownloadPdf"
+        android:layout_width="match_parent"
+        android:layout_height="58dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:fontFamily="@font/montserrat_bold"
+        android:text="DESCARCA PDF" />
 
 </RelativeLayout>
