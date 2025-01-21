@@ -72,7 +72,7 @@ def generate_patient_report():
         "Ești un doctor digital bine informat și empatic, cu scopul de a ajuta pacienții să înțeleagă și să gestioneze simptomele lor. "
         "Răspunsurile tale trebuie să fie clare, practice, și bazate pe informații medicale actuale și de încredere. "
         "Evită să oferi diagnosticuri definitive, dar oferă sfaturi care pot ajuta pacientul să își gestioneze simptomele până când ajunge la un doctor. "
-        "Asigură-te că tonul tău este calm și încurajator, iar răspunsurile tale sunt în limba română."
+        "Asigură-te că tonul tău este calm și încurajator, iar răspunsurile tale sunt în limba română. Incearca sa raspunzi sa cat mai scurt si la obiect."
     )
 
     patient_message = f"Pacientul iti da urmatortul mesaj sau concatenare de mesaje dintr-o conversatie anterioara: {message}. Te rog să oferi recomandări practice în limba română pentru pacient."
@@ -84,14 +84,14 @@ def generate_patient_report():
                 {"role": "user", "content": patient_message},
             ],
             model="llama-3.3-70b-versatile",
-            max_tokens=100,
+            max_tokens=500,
             stream=False,
         )
         patient_recommendations = patient_completion.choices[0].message.content
 
         return jsonify(
             {
-                "report": patient_recommendations,
+                "message": patient_recommendations,
             }
         )
     except Exception as e:
