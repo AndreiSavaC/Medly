@@ -8,6 +8,7 @@ import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.Headers
 import retrofit2.http.POST
+import retrofit2.http.PUT
 import retrofit2.http.Path
 
 interface UserService {
@@ -22,4 +23,7 @@ interface UserService {
 
     @GET("users/{id}")
     fun getUserById(@Path("id") id: Int): Call<UserResponse>
+
+    @PUT("users/{id}")
+    fun updateUser(@Path("id") id: Int, @Body user: UserRequest): Call<Void>
 }
