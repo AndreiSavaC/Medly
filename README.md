@@ -1,6 +1,6 @@
-# HealthConnect
+# Medly
 
-HealthConnect is a mobile application designed to streamline interactions between patients and family doctors through digital technologies. It simplifies appointment scheduling, enhances communication, and incorporates AI-powered features to provide a personalized healthcare experience.
+Medly is a mobile application designed to streamline interactions between patients and family doctors through digital technologies. It simplifies appointment scheduling, enhances communication, and incorporates AI-powered features to provide a personalized healthcare experience.
 
 ## Features
 
@@ -12,7 +12,7 @@ HealthConnect is a mobile application designed to streamline interactions betwee
 
 ## Architecture
 
-HealthConnect follows a modular architecture comprising the following components:
+Medly follows a modular architecture comprising the following components:
 
 - **Android Application:** 
   - Developed in Kotlin.
